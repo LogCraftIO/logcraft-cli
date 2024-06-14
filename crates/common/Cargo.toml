@@ -1,0 +1,41 @@
+# Copyright (c) 2023 LogCraft, SAS.
+# SPDX-License-Identifier: MPL-2.0
+
+[package]
+name = "logcraft-common"
+description = "LogCraft common utilities"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+categories.workspace = true
+keywords.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_yaml_ng.workspace = true
+url.workspace = true
+tokio.workspace = true
+tokio-util.workspace = true
+reqwest = { workspace = true, features = ["stream"] }
+wasmtime.workspace = true
+serde_json.workspace = true
+inquire.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+kclvm-api.workspace = true
+
+dialoguer = "0.11"
+
+futures = "0.3"
+async-trait = "0.1"
+tempfile = "3.10"
+rayon = "1.10.0"
+dashmap = "5.5"
+
+# Local dependencies
+logcraft-runtime = { path = "../runtime" }
