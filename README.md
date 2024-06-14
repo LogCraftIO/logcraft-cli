@@ -12,6 +12,11 @@ With LogCraft CLI, you can easily deploy your security detections into your SIEM
 
 ---
 
+## Roadmap
+
+- **Alpha:** Current state, open for testing and feedback.
+- **v0.1.0:** Planned release in June 2024, will include initial stable features.
+
 ## Support
 
 ### Community Support
@@ -22,7 +27,7 @@ Join our public [Slack channel](https://join.slack.com/t/logcraft/shared_invite/
 
 ### Premium Support 
 
-While our project is open source and licensed under the [Mozilla Public License 2.0](./LICENSE), we understand that some users and organizations might require additional support to ensure seamless integration and optimal usage. To cater to these needs, we offer premium support services, which includes:
+While our project is open source and licensed under the [Mozilla Public License 2.0](./LICENSE), we understand that some users and organizations might require additional support to ensure seamless integration and optimal usage. To cater to these needs, we offer premium support services, which include:
 
 - Dedicated Assistance: Get access to our team of experts who are well-versed in every aspect of this project, from threat detection to DevOps operations.
 - Priority Response: Enjoy faster response times for your queries and issues.

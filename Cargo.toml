@@ -1,0 +1,84 @@
+# Copyright (c) 2023 LogCraft, SAS.
+# SPDX-License-Identifier: MPL-2.0
+
+[package]
+name = "lgc"
+version     = { workspace = true }
+authors     = { workspace = true }
+description = { workspace = true }
+edition     = { workspace = true }
+license     = { workspace = true }
+
+[workspace.package]
+version = "0.1.0"
+authors = ["LogCraft <dev@logcraft.io>"]
+edition = "2021"
+license = "MPL-2.0"
+homepage = "https://www.logcraft.io"
+repository = "https://github.com/LogCraftIO/logcraft-cli"
+rust-version = "1.78"
+readme = "README.md"
+description = """
+Easily build Detection-as-Code pipelines for modern security tools (SIEM, EDR, XDR, ...)
+"""
+categories = ["command-line-utilities", "config"]
+keywords = ["iac", "dac", "security", "detection", "siem", "edr", "xdr", "automation"]
+
+[[bin]]
+name = "lgc"
+path = "src/bin/lgc.rs"
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = "debuginfo"
+
+[dependencies]
+anyhow.workspace = true
+futures.workspace = true
+serde.workspace = true
+serde_yaml_ng.workspace = true
+url.workspace = true
+wasmtime.workspace = true
+tokio = { workspace = true, features = ["full"] }
+tokio-util.workspace = true
+kclvm-api.workspace = true
+inquire.workspace = true
+
+serde_json = "1.0"
+console = "0.15"
+clap = { version = "4.5", features = ["derive", "env", "cargo"] }
+figment = { version = "0.10", features = ["yaml", "env"] }
+
+# Local dependencies
+logcraft-common = { path = "crates/common" }
+logcraft-runtime = { path = "crates/runtime" }
+
+[workspace]
+members = ["crates/*"]
+
+[workspace.dependencies]
+anyhow = "1.0"
+serde = "1.0"
+serde_yaml_ng = "0.10"
+serde_json = "1.0"
+url = "2.5"
+tokio = "1.38"
+tokio-util = "0.7"
+reqwest = "0.12.4"
+futures = "0.3"
+http = "1.1"
+inquire = "0.7"
+kclvm-api = { git = "https://github.com/kcl-lang/kcl", tag= "v0.8.7", version = "0.8.7" }
+wasmtime = "21.0"
+wasmtime-wasi = "21.0"
+wasmtime-wasi-http = "21.0"
+tracing = {version = "0.1", features = ["log"] }
+tracing-subscriber = {version = "0.3", features = [
+    "ansi",
+    "env-filter",
+    "fmt",
+    "json",
+    "std",
+] }
