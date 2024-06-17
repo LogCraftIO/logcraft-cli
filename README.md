@@ -17,6 +17,16 @@ With LogCraft CLI, you can easily deploy your security detections into your SIEM
 - **Alpha:** Current state, open for testing and feedback.
 - **v0.1.0:** Planned release in June 2024, will include initial stable features.
 
+## Build from sources
+
+```bash
+git clone git@github.com:LogCraftIO/logcraft-cli.git
+cd logcraft-cli
+cargo build --release
+```
+
+The resulting binary will be available at `./target/release/lgc`
+
 ## Support
 
 ### Community Support
