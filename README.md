@@ -27,6 +27,19 @@ cargo build --release
 
 The resulting binary will be available at `./target/release/lgc`
 
+Once built, add the `lgc` binary to your `PATH`, for example in `/usr/local/bin`
+
+```bash
+sudo cp target/release/lgc /usr/local/bin/
+```
+
+Finally, ensure `lgc` is correctly installed
+
+```bash
+cd
+lgc --version
+```
+
 ## Support
 
 ### Community Support
