@@ -11,7 +11,6 @@ use logcraft_common::{
     detections::map_plugin_detections,
     plugins::manager::{PluginActions, PluginManager},
 };
-
 /// Validate configuration
 #[derive(Parser, Debug, Default)]
 #[clap(about = "Validate local detection rules", allow_hyphen_values = true)]
@@ -56,25 +55,25 @@ impl ValidateCommand {
                 let check = serv.validate_code(&args)?;
                 if !check.success {
                     has_err = true;
-                    eprintln!("`{}`", check.err_message);
+                    tracing::error!("`{}`", check.err_message);
                 }
             }
 
             // Check rules
             args.code = instance.schema(&mut store).await?;
             args.schema = String::from("Rule");
-            for (_, rule) in rules {
-                args.data = serde_yaml_ng::to_string(rule)?;
+            for detection in rules {
+                args.data = serde_yaml_ng::to_string(&detection.content)?;
                 let check = serv.validate_code(&args)?;
                 if !check.success {
                     has_err = true;
-                    eprintln!("`{}`", check.err_message);
+                    tracing::error!("`{}`", check.err_message);
                 }
             }
         }
 
         if !has_err {
-            println!("all good, no problems identified");
+            tracing::info!("all good, no problems identified");
         }
 
         Ok(())

@@ -60,16 +60,16 @@ impl WasiHttpView for State {
         request: hyper::Request<HyperOutgoingBody>,
         config: OutgoingRequestConfig,
     ) -> wasmtime_wasi_http::HttpResult<HostFutureIncomingResponse> {
-        Ok(default_send_request_test(request, config))
+        Ok(default_send_request(request, config))
     }
 }
 
-pub fn default_send_request_test(
+pub fn default_send_request(
     request: hyper::Request<HyperOutgoingBody>,
     config: OutgoingRequestConfig,
 ) -> HostFutureIncomingResponse {
     let handle = wasmtime_wasi::runtime::spawn(async move {
-        Ok(default_send_request_handler_test(request, config).await)
+        Ok(default_send_request_handler(request, config).await)
     });
     HostFutureIncomingResponse::pending(handle)
 }
@@ -82,7 +82,7 @@ pub(crate) fn dns_error(rcode: String, info_code: u16) -> ErrorCode {
 }
 
 // ! Quick fix to allow invalid certificate (for selfsigned certificates)
-pub async fn default_send_request_handler_test(
+pub async fn default_send_request_handler(
     mut request: hyper::Request<HyperOutgoingBody>,
     OutgoingRequestConfig {
         use_tls,
@@ -141,7 +141,9 @@ pub async fn default_send_request_handler_test(
             let mut parts = authority.split(':');
             let host = parts.next().unwrap_or(&authority);
 
-            let stream = connector.connect(host, tcp_stream).await.unwrap();
+            let stream = connector.connect(host, tcp_stream).await.map_err(|e| {
+                ErrorCode::InternalError(Some(format!("initializing tls stream: {}", e)))
+            })?;
 
             let stream = TokioIo::new(stream);
 

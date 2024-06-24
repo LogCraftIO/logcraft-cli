@@ -3,7 +3,8 @@
 
 use anyhow::{anyhow, bail, Ok, Result};
 use clap::{Parser, Subcommand};
-use inquire::{Select, Text};
+use console::style;
+use dialoguer::{theme::ColorfulTheme, Input, Select};
 use logcraft_common::{
     configuration::{Environment, ProjectConfiguration},
     utils::ensure_kebab_case,
@@ -42,29 +43,34 @@ impl EnvironmentsCommands {
 
 #[derive(Parser)]
 pub struct AddEnvironment {
-    /// Name of the environment to create
-    pub name: Option<String>,
+    /// ID of the environment to create
+    pub id: Option<String>,
 }
 
 impl AddEnvironment {
     pub async fn run(self, config: &mut ProjectConfiguration) -> Result<()> {
-        // Prompt name if not set
-        let name = match self.name {
-            Some(name) => name,
-            None => Text::new("Environment name:").prompt()?,
+        // Prompt theme
+        let prompt_theme = ColorfulTheme::default();
+
+        // Prompt id if not set
+        let id = match self.id {
+            Some(id) => id,
+            None => Input::<String>::with_theme(&prompt_theme)
+                .with_prompt("Environment id:")
+                .interact_text()?,
         };
 
         // Naming contraints check
-        ensure_kebab_case(&name)?;
+        let id = ensure_kebab_case(&id)?.to_string();
 
         // Add new environment if it does not exists
         let env = Environment {
-            name,
+            id,
             ..Default::default()
         };
 
         if config.environments.contains(&env) {
-            bail!("error: environment `{}` already exists", &env.name)
+            bail!("environment `{}` already exists", &env.id)
         } else {
             config.environments.insert(env);
         }
@@ -80,7 +86,11 @@ impl ListEnvironments {
     pub fn run(self, config: &ProjectConfiguration) -> Result<()> {
         // Retrieve configuration
         for plugin in &config.environments {
-            println!("`{}` `{}` service(s)", &plugin.name, plugin.services.len());
+            println!(
+                "`{}` {} service(s)",
+                style(&plugin.id).bold(),
+                plugin.services.len()
+            );
         }
 
         Ok(())
@@ -89,8 +99,8 @@ impl ListEnvironments {
 
 #[derive(Parser)]
 pub struct RemoveEnvironment {
-    /// Name of the environment to remove
-    pub name: Option<String>,
+    /// ID of the environment to remove
+    pub id: Option<String>,
 }
 
 impl RemoveEnvironment {
@@ -99,26 +109,32 @@ impl RemoveEnvironment {
             bail!("no environments defined")
         }
 
-        // Prompt name if not set
-        let name = match self.name {
-            Some(name) => name,
-            None => Select::new(
-                "Select the project to uninstall:",
-                config.environment_names()?,
-            )
-            .prompt()?
-            .to_owned(),
+        // Prompt theme
+        let prompt_theme = ColorfulTheme::default();
+
+        // Prompt id if not set
+        let id = match self.id {
+            Some(id) => id,
+            None => {
+                let environment = config.environment_ids()?;
+                let selection = Select::with_theme(&prompt_theme)
+                    .with_prompt("Select the environment to remove:")
+                    .items(&environment)
+                    .default(0)
+                    .interact()?;
+                environment[selection].to_string()
+            }
         };
 
-        // Because hash is computed from name,
+        // Because hash is computed from id,
         // best method discovered to prevent immutable borrow to get &Plugin for deletion
         let fake = Environment {
-            name,
+            id,
             ..Default::default()
         };
 
         if !config.environments.remove(&fake) {
-            bail!("environment `{}` does not exists", &fake.name)
+            bail!("environment `{}` does not exists", &fake.id)
         };
 
         config.save_config(None)
@@ -127,13 +143,12 @@ impl RemoveEnvironment {
 
 #[derive(Parser)]
 pub struct LinkEnvironment {
-    /// Name of the environment
-    #[clap(short, long)]
-    pub env_name: Option<String>,
+    /// ID of the environment
+    pub env_id: Option<String>,
 
-    /// Name of the service to link to this environment
+    /// ID of the service to link to this environment
     #[clap(short, long)]
-    pub service_name: Option<String>,
+    pub service_id: Option<String>,
 }
 
 impl LinkEnvironment {
@@ -142,40 +157,46 @@ impl LinkEnvironment {
             bail!("no environments defined")
         }
 
-        // Prompt name if not set
-        let name = self.env_name.unwrap_or_else(|| {
-            Select::new(
-                "Select the environment:",
-                config.environment_names().unwrap(),
-            )
-            .prompt()
-            .unwrap()
-            .to_owned()
-        });
+        // Prompt theme
+        let prompt_theme = ColorfulTheme::default();
+
+        // Prompt id if not set
+        let id = match self.env_id {
+            Some(id) => id,
+            None => {
+                let environment = config.environment_ids()?;
+                let selection = Select::with_theme(&prompt_theme)
+                    .with_prompt("Select the environment:")
+                    .items(&environment)
+                    .default(0)
+                    .interact()?;
+                environment[selection].to_string()
+            }
+        };
 
         // Retrieve environment
         let mut env = config
             .environments
             .get(&Environment {
-                name: name.clone(),
+                id: id.clone(),
                 ..Default::default()
             })
-            .ok_or_else(|| anyhow!("environment `{}` does not exist", &name))?
+            .ok_or_else(|| anyhow!("environment `{}` does not exist", &id))?
             .clone();
 
         // Retrieve selected services
-        let services: Vec<String> = config.service_names()?;
-        let service_name = match self.service_name {
-            Some(name) => {
-                if !services.contains(&name) {
-                    bail!("service `{}` does not exist", &name)
+        let services: Vec<&str> = config.service_ids()?;
+        let service_id = match &self.service_id {
+            Some(id) => {
+                if !services.contains(&id.as_str()) {
+                    bail!("service `{}` does not exist", &id)
                 }
-                name
+                id.to_string()
             }
             None => {
                 let env_services: Vec<_> = services
                     .iter()
-                    .filter(|&svc_name| !env.services.contains(svc_name))
+                    .filter(|&&svc_id| !env.services.contains(svc_id))
                     .cloned()
                     .collect();
 
@@ -183,29 +204,30 @@ impl LinkEnvironment {
                     bail!("no available service to link to this environment")
                 }
 
-                Select::new("Service to link:", env_services).prompt()?
+                let selection = Select::with_theme(&prompt_theme)
+                    .with_prompt("Service to link:")
+                    .items(&env_services)
+                    .default(0)
+                    .interact()?;
+                env_services[selection].to_string()
             }
         };
 
-        env.services.insert(service_name.to_string());
+        env.services.insert(service_id.to_string());
         config.environments.replace(env);
-        println!(
-            "service `{}` linked to environement `{}`",
-            service_name, name
-        );
+        tracing::info!("service `{}` linked to environement `{}`", service_id, id);
         config.save_config(None)
     }
 }
 
 #[derive(Parser)]
 pub struct UnlinkEnvironment {
-    /// Name of the environment
-    #[clap(short, long)]
-    pub env_name: Option<String>,
+    /// ID of the environment
+    pub env_id: Option<String>,
 
-    /// Name of the service to unlink from this environment
+    /// ID of the service to unlink from this environment
     #[clap(short, long)]
-    pub service_name: Option<String>,
+    pub service_id: Option<String>,
 }
 
 impl UnlinkEnvironment {
@@ -214,44 +236,50 @@ impl UnlinkEnvironment {
             bail!("no environments defined")
         }
 
-        // Prompt name if not set
-        let name = self.env_name.unwrap_or_else(|| {
-            Select::new(
-                "Select the environment:",
-                config.environment_names().unwrap(),
-            )
-            .prompt()
-            .unwrap()
-            .to_owned()
-        });
+        // Prompt theme
+        let prompt_theme = ColorfulTheme::default();
+
+        // Prompt id if not set
+        let id = match self.env_id {
+            Some(id) => id,
+            None => {
+                let environment = config.environment_ids()?;
+                let selection = Select::with_theme(&prompt_theme)
+                    .with_prompt("Select the environment:")
+                    .items(&environment)
+                    .default(0)
+                    .interact()?;
+                environment[selection].to_string()
+            }
+        };
 
         // Retrieve environment
         let mut env = config
             .environments
             .get(&Environment {
-                name: name.clone(),
+                id: id.clone(),
                 ..Default::default()
             })
-            .ok_or_else(|| anyhow!("environment `{}` does not exist", &name))?
+            .ok_or_else(|| anyhow!("environment `{}` does not exist", &id))?
             .clone();
 
         // Retrieve selected services
-        let services: Vec<String> = config.service_names()?;
-        let service_name = match self.service_name {
-            Some(name) => {
-                if !env.services.contains(&name) {
+        let services: Vec<&str> = config.service_ids()?;
+        let service_id = match self.service_id {
+            Some(id) => {
+                if !env.services.contains(&id) {
                     bail!(
                         "service `{}` is not linked to environment `{}`",
-                        &name,
-                        &env.name
+                        &id,
+                        &env.id
                     )
                 }
-                name
+                id
             }
             None => {
                 let env_services: Vec<_> = services
                     .iter()
-                    .filter(|&svc_name| env.services.contains(svc_name))
+                    .filter(|&&svc_id| env.services.contains(svc_id))
                     .cloned()
                     .collect();
 
@@ -259,15 +287,21 @@ impl UnlinkEnvironment {
                     bail!("no available service to unlink from this environment")
                 }
 
-                Select::new("Service to unlink:", env_services).prompt()?
+                let selection = Select::with_theme(&prompt_theme)
+                    .with_prompt("Service to link:")
+                    .items(&env_services)
+                    .default(0)
+                    .interact()?;
+                env_services[selection].to_string()
             }
         };
 
-        env.services.remove(&service_name);
+        env.services.remove(&service_id);
         config.environments.replace(env);
-        println!(
+        tracing::info!(
             "service `{}` unlinked from environement `{}`",
-            service_name, name
+            service_id,
+            id
         );
         config.save_config(None)
     }

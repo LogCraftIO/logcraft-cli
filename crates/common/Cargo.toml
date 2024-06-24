@@ -28,14 +28,18 @@ inquire.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
 kclvm-api.workspace = true
-
-dialoguer = "0.11"
+kclvm-query.workspace = true
+kclvm-sema.workspace = true
+rayon.workspace = true
+dashmap.workspace = true
+console.workspace = true
+dialoguer.workspace = true
 
 futures = "0.3"
 async-trait = "0.1"
 tempfile = "3.10"
-rayon = "1.10.0"
-dashmap = "5.5"
+uuid = "1.8"
+similar = "2.5"
 
 # Local dependencies
 logcraft-runtime = { path = "../runtime" }

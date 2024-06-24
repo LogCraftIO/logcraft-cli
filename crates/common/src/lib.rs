@@ -5,4 +5,5 @@
 pub mod configuration;
 pub mod detections;
 pub mod plugins;
+pub mod state;
 pub mod utils;
