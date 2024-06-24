@@ -3,13 +3,15 @@
 
 use anyhow::{anyhow, bail, Result};
 use clap::{Parser, Subcommand};
-use inquire::{Confirm, Select, Text};
+use console::style;
+use dialoguer::{theme::ColorfulTheme, Confirm, Input, Select};
+use indicatif::{ProgressBar, ProgressStyle};
 use logcraft_common::{
     configuration::{ProjectConfiguration, Service},
     plugins::manager::{PluginActions, PluginManager},
     utils,
 };
-use std::collections::HashMap;
+use std::{collections::HashMap, time::Duration};
 use tokio::task::JoinSet;
 
 /// Manage backend services
@@ -45,33 +47,37 @@ impl ServicesCommands {
 
 #[derive(Parser)]
 pub struct AddService {
-    /// Name of the service to create
-    pub name: Option<String>,
+    /// ID of the service to create
+    pub id: Option<String>,
 
     /// Name of the plugin used by this service
     #[clap(short, long)]
     pub plugin_name: Option<String>,
 
-    /// Enable prompt for plugin settings
+    /// Interactive service configuration
     #[clap(long)]
     pub configure: bool,
-
-    /// Enable prompt for plugin settings
-    #[clap(long)]
-    pub insecure: bool,
 }
 
 impl AddService {
     pub async fn run(self, config: &mut ProjectConfiguration) -> Result<()> {
+        // Prompt theme
+        let prompt_theme = ColorfulTheme::default();
+
         // Choose plugin if not set
         let plugins: Vec<&str> = config.plugins.keys().map(|k| k.as_str()).collect();
         let plugin_name = match &self.plugin_name {
-            Some(name) => name,
+            Some(id) => id,
             None => {
                 if plugins.is_empty() {
-                    bail!("the configuration does not have any plugin")
+                    bail!("no plugin installed")
                 }
-                Select::new("Select the plugin to use:", plugins.clone()).prompt()?
+                let selection = Select::with_theme(&prompt_theme)
+                    .with_prompt("Select the plugin to use:")
+                    .items(&plugins)
+                    .default(0)
+                    .interact()?;
+                plugins[selection]
             }
         };
 
@@ -79,28 +85,30 @@ impl AddService {
             bail!("plugin `{}` does not exists", &plugin_name)
         }
 
-        // Prompt name if not set
-        let name = match self.name {
-            Some(name) => name,
-            None => Text::new("Service name:").prompt()?,
+        // Prompt id if not set
+        let id = match self.id {
+            Some(id) => id,
+            // None => Text::new("Service id:").prompt()?,
+            None => Input::<String>::with_theme(&prompt_theme)
+                .with_prompt("Service id:")
+                .interact_text()?,
         };
 
         // Naming contraints check
-        let name = utils::ensure_kebab_case(&name)?;
+        let id = utils::ensure_kebab_case(&id)?;
 
         let mut service = Service {
-            name: name.clone(),
+            id: id.to_string(),
             plugin: plugin_name.to_string(),
             ..Default::default()
         };
 
         if config.services.contains(&service)
-            && !Confirm::new("This service already exists, overwrite ?")
-                .with_default(false)
-                .prompt()?
+            && !Confirm::with_theme(&prompt_theme)
+                .with_prompt("This service already exists, overwrite ?")
+                .interact()?
         {
-            println!("action aborted");
-            return Ok(());
+            bail!("action aborted")
         }
 
         // Load plugin
@@ -110,16 +118,16 @@ impl AddService {
         service.configure(instance.settings(&mut store).await?, !self.configure)?;
 
         config.services.insert(service);
-        println!("service `{}` created", &name);
+        tracing::info!("service `{}` created", &id);
         config.save_config(None)
     }
 }
 
 #[derive(Parser)]
 pub struct ListServices {
-    /// Name of the environment.
+    /// ID of the environment.
     #[clap(short, long)]
-    pub env_name: Option<String>,
+    pub env_id: Option<String>,
 }
 
 impl ListServices {
@@ -129,7 +137,11 @@ impl ListServices {
         }
 
         for svc in &config.services {
-            println!("`{}` (`{}`)", &svc.name, svc.plugin);
+            println!(
+                "- `{}` (`{}`)",
+                style(&svc.id).bold(),
+                style(&svc.plugin).bold()
+            );
         }
         Ok(())
     }
@@ -137,8 +149,8 @@ impl ListServices {
 
 #[derive(Parser)]
 pub struct RemoveService {
-    /// Name of the service to remove.
-    pub name: Option<String>,
+    /// ID of the service to remove.
+    pub id: Option<String>,
 
     /// Force service removal and its references
     #[clap(short, long, default_value = "false")]
@@ -151,40 +163,49 @@ impl RemoveService {
             bail!("no services defined")
         }
 
+        // Prompt theme
+        let prompt_theme = ColorfulTheme::default();
+
         // Choose service if not set
-        let name = match self.name {
-            Some(name) => name,
-            None => Select::new("Select the service:", config.service_names()?)
-                .prompt()?
-                .to_owned(),
+        let id = match self.id {
+            Some(id) => id,
+            None => {
+                let services = config.service_ids()?;
+                let selection = Select::with_theme(&prompt_theme)
+                    .with_prompt("Select the service:")
+                    .items(&services)
+                    .default(0)
+                    .interact()?;
+                services[selection].to_string()
+            }
         };
 
         // Check if service exists
-        if !config.services.iter().any(|svc| svc.name == name) {
-            bail!("service `{}` does not exists", &name)
+        if !config.services.iter().any(|svc| svc.id == id) {
+            bail!("service `{}` does not exists", &id)
         }
 
         // If removal is not forced, check if service is used in any environment
         if !self.force
       // check if service is used in any environment
-      && config.environments.iter().any(|env| env.services.contains(&name))
-      && !Confirm::new("This service is used in some environment(s), remove it along with its references ?").with_default(false).prompt()?
-    {
-      bail!("action aborted")
-    }
+      && config.environments.iter().any(|env| env.services.contains(&id))
+      && !Confirm::with_theme(&prompt_theme).with_prompt("This service is used in some environment(s), force removal ?").interact()?
+        {
+            bail!("action aborted")
+        }
 
         // remove all occurences of service in environments
-        config.unlink_environments(&name);
+        config.unlink_environments(&id);
 
-        config.remove_service(&name);
+        config.remove_service(&id);
         config.save_config(None)
     }
 }
 
 #[derive(Parser)]
 pub struct ConfigureService {
-    /// name of the service to configure
-    pub name: Option<String>,
+    /// id of the service to configure
+    pub id: Option<String>,
 }
 
 impl ConfigureService {
@@ -193,21 +214,30 @@ impl ConfigureService {
             bail!("no services defined")
         }
 
+        // Prompt theme
+        let prompt_theme = ColorfulTheme::default();
+
         // Choose service if not set
-        let name = self.name.unwrap_or_else(|| {
-            Select::new("Select the service:", config.service_names().unwrap())
-                .prompt()
-                .unwrap()
-                .to_owned()
-        });
+        let id = match self.id {
+            Some(id) => id,
+            None => {
+                let services = config.service_ids()?;
+                let selection = Select::with_theme(&prompt_theme)
+                    .with_prompt("Select the service:")
+                    .items(&services)
+                    .default(0)
+                    .interact()?;
+                services[selection].to_string()
+            }
+        };
 
         let mut service = config
             .services
             .take(&Service {
-                name: name.clone(),
+                id: id.clone(),
                 ..Default::default()
             })
-            .ok_or_else(|| anyhow!("service `{}` does not exist", &name))?;
+            .ok_or_else(|| anyhow!("service `{}` does not exist", &id))?;
 
         // Load plugin
         let (instance, mut store) = PluginManager::new()?.load_plugin(&service.plugin).await?;
@@ -216,16 +246,18 @@ impl ConfigureService {
         service.configure(instance.settings(&mut store).await?, false)?;
 
         config.services.insert(service);
-        println!("service `{}` configured", &name);
+        tracing::info!("service `{}` configured", &id);
         config.save_config(None)
     }
 }
+
+pub const SPINNER: &[&str; 4] = &["-", "\\", "|", "/"];
 
 #[derive(Parser)]
 pub struct PingService;
 
 impl PingService {
-    pub async fn run(self, config: &mut ProjectConfiguration) -> Result<()> {
+    pub async fn run(self, config: &ProjectConfiguration) -> Result<()> {
         if config.services.is_empty() {
             bail!("no services defined")
         }
@@ -258,12 +290,25 @@ impl PingService {
                 .ok_or_else(|| anyhow!("plugin `{}` instance not found", &meta.name))?
                 .iter()
             {
-                let config = &serde_json::to_string(&svc.settings)?;
+                let spinner = ProgressBar::new_spinner();
+                spinner.enable_steady_tick(Duration::from_millis(130));
+                spinner.set_style(
+                    ProgressStyle::with_template("{spinner:.bold.dim} {msg}")
+                        .unwrap()
+                        .tick_strings(SPINNER),
+                );
+                spinner.set_message(svc.id.clone());
 
+                let config = &serde_json::to_string(&svc.settings)?;
                 if let Err(e) = instance.ping(&mut store, config).await {
-                    println!("{}... {}", &svc.name, e);
+                    spinner.finish_with_message(format!(
+                        "{} ... {}",
+                        style(&svc.id).bold().red(),
+                        e
+                    ));
                 } else {
-                    println!("{}... OK", &svc.name);
+                    spinner
+                        .finish_with_message(format!("{} ... OK", style(&svc.id).bold().green()));
                 }
             }
         }

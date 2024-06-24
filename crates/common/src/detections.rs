@@ -2,17 +2,26 @@
 // SPDX-License-Identifier: MPL-2.0
 
 use anyhow::{bail, Result};
+use console::{style, Style};
 use dashmap::DashMap;
 use kclvm_api::gpyrpc::ValidateCodeArgs;
 use kclvm_api::service::KclvmServiceImpl;
-use rayon::iter::{IntoParallelIterator, ParallelIterator};
+use rayon::iter::{IntoParallelIterator, IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
-use serde_yaml_ng::Value;
+use serde_json::Value;
+use similar::{ChangeTag, TextDiff};
+use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
-use std::{collections::HashMap, sync::Mutex};
+use std::{
+    collections::HashSet,
+    hash::{Hash, Hasher},
+};
 
-use crate::{configuration::LGC_RULES_DIR, plugins::LGC_PLUGINS_PATH};
+use crate::{
+    configuration::{Service, LGC_RULES_DIR},
+    plugins::LGC_PLUGINS_PATH,
+};
 
 pub const GENERIC_DETECTION: &str = r#"
 schema Detection:
@@ -31,10 +40,14 @@ schema Detection:
     rules: {str:any}
 "#;
 
+// Helper types to store detections per plugin or per service
+pub type PluginDetections = HashMap<String, HashSet<DetectionState>>;
+pub type ServiceDetections = HashMap<String, HashSet<DetectionState>>;
+
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Detection {
     pub name: String,
-    pub rules: std::collections::HashMap<String, serde_yaml_ng::Value>,
+    pub rules: HashMap<String, Value>,
 }
 
 impl Detection {
@@ -53,32 +66,29 @@ impl Detection {
 
         let check = serv.validate_code(&args)?;
         if !check.success {
-            eprintln!(
-                "Failed to verify detection file `{}`: {}",
-                path, check.err_message
+            tracing::error!(
+                "failed to verify detection file `{}`: {}",
+                path,
+                check.err_message
             );
             std::process::exit(1);
         };
 
-        let data = fs::read_to_string(&path)?;
-        let detection: Self =
-            serde_yaml_ng::from_str(&data).map_err(|e| anyhow::Error::msg(format!("{e}")))?;
-
-        Ok(detection)
+        serde_yaml_ng::from_str(&fs::read_to_string(&path)?)
+            .map_err(|e| anyhow::Error::msg(format!("{e}")))
     }
 }
 
-pub fn map_plugin_detections() -> Result<HashMap<String, Vec<(String, Value)>>> {
+pub fn map_plugin_detections() -> Result<HashMap<String, HashSet<DetectionState>>> {
     let entries: Vec<PathBuf> = fs::read_dir(LGC_RULES_DIR)?
         .filter_map(|file| file.ok().map(|f| f.path()))
         .collect();
 
-    let plugins: DashMap<String, Vec<(String, Value)>> = DashMap::new();
-    let detection_names: Mutex<Vec<String>> = Mutex::new(Vec::new());
+    let plugins: DashMap<String, HashSet<DetectionState>> = DashMap::new();
 
     // Check plugin existence
     if !PathBuf::from(LGC_PLUGINS_PATH).exists() {
-        bail!("Plugin directory `{LGC_PLUGINS_PATH}` does not exist. Have you installed plugins?")
+        bail!("plugin directory `{LGC_PLUGINS_PATH}` does not exist. Have you installed plugins?")
     }
 
     let plugins_name: Vec<String> = fs::read_dir(LGC_PLUGINS_PATH)?
@@ -98,22 +108,9 @@ pub fn map_plugin_detections() -> Result<HashMap<String, Vec<(String, Value)>>> 
         .filter_map(|path| match path.extension().and_then(|ext| ext.to_str()) {
             Some("yml") | Some("yaml") => {
                 match Detection::pre_validate(path.display().to_string()) {
-                    Ok(detection) => {
-                        let mut detection_names_lock = detection_names.lock().unwrap();
-                        if detection_names_lock.contains(&detection.name) {
-                            eprintln!(
-                                "error: detection duplication - {} appears again in: {}",
-                                &detection.name,
-                                path.display()
-                            );
-                            std::process::exit(1);
-                        } else {
-                            detection_names_lock.push(detection.name.clone());
-                            Some((path, detection))
-                        }
-                    }
+                    Ok(detection) => Some((path, detection)),
                     Err(e) => {
-                        eprintln!("{e}");
+                        tracing::error!("{e}");
                         None
                     }
                 }
@@ -121,14 +118,21 @@ pub fn map_plugin_detections() -> Result<HashMap<String, Vec<(String, Value)>>> 
             _ => None,
         })
         .for_each(|(path, detection)| {
-            detection.rules.into_iter().for_each(|(plugin, params)| {
+            detection.rules.into_iter().for_each(|(plugin, content)| {
                 if plugins_name.contains(&plugin) {
-                    plugins
-                        .entry(plugin)
-                        .or_default()
-                        .push((detection.name.clone(), params))
+                    if !plugins.entry(plugin).or_default().insert(DetectionState {
+                        name: detection.name.clone(),
+                        content,
+                    }) {
+                        tracing::error!(
+                            "detection duplication - {} appears again in: {}",
+                            &detection.name,
+                            path.display()
+                        );
+                        std::process::exit(1);
+                    };
                 } else {
-                    eprintln!(
+                    tracing::error!(
                         "referenced plugin `{}` in `{}` does not exist",
                         &plugin,
                         path.display()
@@ -138,4 +142,80 @@ pub fn map_plugin_detections() -> Result<HashMap<String, Vec<(String, Value)>>> 
         });
 
     Ok(plugins.into_iter().collect())
+}
+
+#[derive(Eq, Debug, Clone, Serialize, Deserialize)]
+pub struct DetectionState {
+    pub name: String,
+    pub content: Value,
+}
+
+impl PartialEq for DetectionState {
+    fn eq(&self, other: &DetectionState) -> bool {
+        self.name == other.name
+    }
+}
+
+impl Hash for DetectionState {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.name.hash(state);
+    }
+}
+
+// Return true if there is a change in detections
+pub fn compare_detections(
+    detections: &PluginDetections,
+    retrieved_detections: &ServiceDetections,
+    services: &HashMap<String, Vec<&Service>>,
+    debug: bool,
+) -> ServiceDetections {
+    let changed: DashMap<String, HashSet<DetectionState>> = DashMap::new();
+
+    detections.par_iter().for_each(|(plugin_name, rules)| {
+        if let Some(services) = services.get(plugin_name) {
+            for service in services {
+                if let Some(retrieved) = retrieved_detections.get(&service.id) {
+                    for rule in rules {
+                        if let Some(retrieved_rule) = retrieved.get(rule) {
+                            let retrieved =
+                                serde_json::to_string_pretty(&retrieved_rule.content).unwrap();
+                            let requested = serde_json::to_string_pretty(&rule.content).unwrap();
+                            if retrieved != requested {
+                                changed
+                                    .entry(service.id.clone())
+                                    .and_modify(|s| {
+                                        s.insert(rule.clone());
+                                    })
+                                    .or_insert(HashSet::from([rule.clone()]));
+                                if debug {
+                                    println!(
+                                        "[~] rule: `{}` will be updated on `{}`:",
+                                        style(&rule.name).yellow(),
+                                        &service.id
+                                    );
+                                    show_diff(&retrieved, &requested);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    changed.into_iter().collect()
+}
+
+pub fn show_diff(old: &str, new: &str) {
+    let diff = TextDiff::from_lines(old, new);
+    for op in diff.ops() {
+        for change in diff.iter_changes(op) {
+            let (sign, style) = match change.tag() {
+                ChangeTag::Delete => ("| - ", Style::new().red()),
+                ChangeTag::Insert => ("| + ", Style::new().green()),
+                ChangeTag::Equal => ("|   ", Style::new().dim()),
+            };
+            print!("{}{}", style.apply_to(sign).bold(), style.apply_to(change));
+        }
+    }
 }

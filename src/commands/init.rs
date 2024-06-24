@@ -34,8 +34,8 @@ impl InitCommand {
 
         let rules_dir = &project_path.join(LGC_RULES_DIR);
         if Path::new(rules_dir).exists() {
-            println!(
-                "warn: rules folder already exists in `{}`",
+            tracing::warn!(
+                "rules folder already exists in `{}`",
                 &project_path.canonicalize()?.display()
             )
         }
@@ -48,7 +48,7 @@ impl InitCommand {
         let full_path = &project_path.join(LGC_CONFIG_PATH);
         if File::create_new(full_path).is_err() {
             bail!(
-                "error: `{}` already exists in `{}`",
+                "`{}` already exists in `{}`",
                 LGC_CONFIG_PATH,
                 &project_path.canonicalize()?.display()
             )
@@ -56,7 +56,7 @@ impl InitCommand {
 
         ProjectConfiguration::default().save_config(Some(full_path))?;
 
-        println!(
+        tracing::info!(
             "LogCraft configuration initialized in `{}`",
             &project_path.canonicalize()?.display()
         );

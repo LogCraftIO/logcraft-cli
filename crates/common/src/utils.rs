@@ -3,9 +3,8 @@
 
 use anyhow::{bail, Result};
 
-pub fn ensure_kebab_case(name: &str) -> Result<String> {
-    let s = name.to_ascii_lowercase();
-    let mut chars = s.chars();
+pub fn ensure_kebab_case(name: &str) -> Result<&str> {
+    let mut chars = name.chars();
 
     // Validate the first character: it must be an alphanumeric lower-case character
     match chars.next() {
@@ -43,5 +42,5 @@ pub fn ensure_kebab_case(name: &str) -> Result<String> {
         }
     }
 
-    Ok(s)
+    Ok(name)
 }

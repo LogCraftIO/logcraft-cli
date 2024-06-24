@@ -9,7 +9,7 @@ pub mod manager;
 pub use manager::PluginLocation;
 use url::Url;
 
-pub const LGC_PLUGINS_PATH: &str = ".logcraft";
+pub const LGC_PLUGINS_PATH: &str = ".logcraft/plugins";
 
 #[derive(Serialize, Deserialize, Clone, Default)]
 pub struct Plugin {
@@ -37,14 +37,14 @@ pub fn determine_plugin_location(source: &str) -> Result<PluginLocation> {
         Ok(uri) => match uri.scheme() {
             "http" | "https" => bail!("not implemented yet"),
             "oci" => bail!("not implemented yet"),
-            _ => bail!("invalid scheme: {}", uri.scheme()),
+            _ => bail!("unsupported scheme: {}", uri.scheme()),
         },
         Err(_) => {
             let path = PathBuf::from_str(source)?;
             if path.is_file() {
                 Ok(PluginLocation::Local(path))
             } else {
-                bail!("provided path does not target a file")
+                bail!("invalid plugin location")
             }
         }
     }

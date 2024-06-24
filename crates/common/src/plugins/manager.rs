@@ -5,12 +5,14 @@ use anyhow::{anyhow, bail, Result};
 use async_trait::async_trait;
 use logcraft_runtime::{
     plugin_component::plugin::Metadata, state::State, Config, Engine, Interfaces,
+    DEFAULT_EPOCH_TICK_INTERVAL,
 };
 use serde::{Deserialize, Serialize};
 use std::{
     fmt, fs,
     io::Write,
     path::{Path, PathBuf},
+    time::Duration,
 };
 use tempfile::NamedTempFile;
 use wasmtime::{component::Component, Store};
@@ -34,8 +36,8 @@ impl PluginManager {
         // Setup wasmtime
         let mut config = Config::default();
         if let Err(e) = config.enable_cache(&None) {
-            tracing::error!(err = ?e, "Failed to load wasm cache");
-            bail!("warn: unable load wasmtime cache: {}", e);
+            tracing::warn!(err = ?e, "failed to load wasm cache");
+            bail!("{e}")
         };
 
         let engine = Engine::builder(&config)?.build();
@@ -50,11 +52,10 @@ impl PluginManager {
         // Instanciate plugin
         let path = file.path();
         let (instance, _) = self.load_plugin(&path).await?;
-
         // Check if plugin directory exists
         let plugin_path = PathBuf::from(LGC_PLUGINS_PATH);
         if !plugin_path.exists() {
-            fs::create_dir(&plugin_path)?;
+            fs::create_dir_all(&plugin_path)?;
         }
 
         // Copying file to avoid cross-device link error
@@ -78,7 +79,10 @@ impl PluginManager {
         let mut store = wasmtime::Store::new(&self.engine.inner, State::default());
 
         // TODO: Check for better value
-        store.set_epoch_deadline(6000);
+        let deadline = Duration::from_secs(60);
+        store.set_epoch_deadline(
+            (deadline.as_micros() / DEFAULT_EPOCH_TICK_INTERVAL.as_micros()) as u64,
+        );
 
         let (interface, _) =
             Interfaces::instantiate_async(&mut store, &component, &self.engine.linker).await?;
@@ -166,12 +170,19 @@ impl PluginActions for InstanceData {
         self.interface
             .logcraft_host_plugin()
             .call_create(store, config, name, params)
-            .await?
+            .await
             .map_err(|e| {
                 anyhow!(
-                    "error when calling create for plugin `{}`: {}",
+                    "when calling read for plugin `{}`: {}",
                     self.metadata.name,
-                    e.to_string()
+                    e
+                )
+            })?
+            .map_err(|e| {
+                anyhow!(
+                    "when calling create for plugin `{}`: {}",
+                    self.metadata.name,
+                    e
                 )
             })
     }
@@ -189,9 +200,9 @@ impl PluginActions for InstanceData {
             .await?
             .map_err(|e| {
                 anyhow!(
-                    "error when calling read for plugin `{}`: {}",
+                    "when calling read for plugin `{}`: {}",
                     self.metadata.name,
-                    e.to_string()
+                    e
                 )
             })
     }
@@ -209,9 +220,9 @@ impl PluginActions for InstanceData {
             .await?
             .map_err(|e| {
                 anyhow!(
-                    "error when calling update for plugin `{}`: {}",
+                    "when calling update for plugin `{}`: {}",
                     self.metadata.name,
-                    e.to_string()
+                    e
                 )
             })
     }
@@ -229,9 +240,9 @@ impl PluginActions for InstanceData {
             .await?
             .map_err(|e| {
                 anyhow!(
-                    "error when calling delete for plugin `{}`: {}",
+                    "when calling delete for plugin `{}`: {}",
                     self.metadata.name,
-                    e.to_string()
+                    e
                 )
             })
     }
@@ -243,9 +254,9 @@ impl PluginActions for InstanceData {
             .await?
             .map_err(|e| {
                 anyhow!(
-                    "error when calling ping for plugin `{}`: {}",
+                    "when calling ping for plugin `{}`: {}",
                     self.metadata.name,
-                    e.to_string()
+                    e
                 )
             })
     }
@@ -286,7 +297,7 @@ impl PluginLocation {
                 // copy(path, &plugin_path)?;
                 tokio::fs::read(path)
                     .await
-                    .map_err(|e| anyhow!("error reading plugin file: {}", e))
+                    .map_err(|e| anyhow!("reading plugin file: {}", e))
             } // Self::Remote(url) => {
               //   // Retrieve remote file
               //   let resp = reqwest::get(url.as_str())

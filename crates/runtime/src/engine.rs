@@ -8,14 +8,10 @@ use std::{path::PathBuf, time::Duration};
 use wasmtime::component::Linker;
 use wasmtime::{InstanceAllocationStrategy, PoolingAllocationConfig};
 
-/// The default [`EngineBuilder::epoch_tick_interval`].
-pub const DEFAULT_EPOCH_TICK_INTERVAL: Duration = Duration::from_millis(10);
-
 use crate::state::State;
+use crate::DEFAULT_EPOCH_TICK_INTERVAL;
 
 const MB: u64 = 1 << 20;
-const GB: u64 = 1 << 30;
-const WASM_PAGE_SIZE: u64 = 64 * 1024;
 
 /// Global configuration for `EngineBuilder`.
 ///
@@ -70,20 +66,17 @@ impl Default for Config {
             // globals, memories, etc. Instance allocations are relatively small and are largely inconsequential
             // compared to other runtime state, but a number needs to be chosen here so a relatively large threshold
             // of 10MB is arbitrarily chosen. It should be unlikely that any reasonably-sized module hits this limit.
-            .max_component_instance_size(MB as usize)
+            // Huge size maximum as bare Python component are 30MB+.
+            .max_component_instance_size(50 * MB as usize)
             .max_core_instances_per_component(200)
             .max_tables_per_component(20)
-            .table_elements(30_000)
+            .table_elements(1_000)
             // The number of memories an instance can have effectively limits the number of inner components
             // a composed component can have (since each inner component has its own memory). We default to 32 for now, and
             // we'll see how often this limit gets reached.
-            .max_memories_per_component(32)
+            .max_memories_per_component(20)
             .total_memories(1_000)
             .total_tables(2_000)
-            // Nothing is lost from allowing the maximum size of memory for
-            // all instance as it's still limited through other the normal
-            // `StoreLimitsAsync` accounting method too.
-            .memory_pages(4 * GB / WASM_PAGE_SIZE)
             // These numbers are completely arbitrary at something above 0.
             .linear_memory_keep_resident((2 * MB) as usize)
             .table_keep_resident((MB / 2) as usize);

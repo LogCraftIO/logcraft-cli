@@ -3,4 +3,4 @@ rules/
 lgc.yaml
 .logcraft/
 # Ignore Wasm components bindings (generated at compile time)
-plugins/**/src/bindings.rs
+/plugins/**/src/bindings.rs

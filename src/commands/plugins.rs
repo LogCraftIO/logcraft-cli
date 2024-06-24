@@ -3,7 +3,8 @@
 
 use anyhow::{anyhow, bail, Result};
 use clap::{Parser, Subcommand};
-use inquire::{Confirm, Select, Text};
+use console::style;
+use dialoguer::{theme::ColorfulTheme, Confirm, Input, Select};
 use logcraft_common::{
     configuration::ProjectConfiguration,
     plugins::{
@@ -17,7 +18,7 @@ use std::path::PathBuf;
 /// Manage plugins
 #[derive(Subcommand)]
 pub enum PluginsCommands {
-    /// Install plugin from archive
+    /// Install plugin
     #[clap(alias = "i")]
     Install(InstallPlugin),
 
@@ -27,10 +28,10 @@ pub enum PluginsCommands {
     /// Remove plugin
     Uninstall(UninstallPlugin),
 
-    /// Update plugin from source
+    /// Update plugin
     Update(UpdatePlugin),
 
-    /// Get plugin configuration informations
+    /// Get plugin configuration schema
     Schema(PluginSchema),
 }
 
@@ -48,24 +49,24 @@ impl PluginsCommands {
 
 #[derive(Parser)]
 pub struct InstallPlugin {
-    /// Source to fecth plugin from in URI format - (file:// | http(s):// )
+    /// Location of the plugin
     pub source: Option<String>,
-
-    /// Version of plugin to fetch
-    #[clap(default_value = "latest")]
-    pub version: String,
-
-    /// Overwrite plugin if exists
-    #[clap(short, long)]
-    pub force: bool,
+    // /// Version of plugin to fetch
+    // #[clap(default_value = "latest")]
+    // pub version: String,
 }
 
 impl InstallPlugin {
     pub async fn run(self, config: &mut ProjectConfiguration) -> Result<()> {
+        // Prompt theme
+        let prompt_theme = ColorfulTheme::default();
+
         // Prompt source if not set
         let source = match self.source {
             Some(source) => source,
-            None => Text::new("Plugin source:").prompt()?,
+            None => Input::<String>::with_theme(&prompt_theme)
+                .with_prompt("Plugin source:")
+                .interact_text()?,
         };
 
         // Determine the plugin location
@@ -107,7 +108,11 @@ impl ListPlugin {
 
         // Iterate and print plugin information
         config.plugins.iter().for_each(|(name, plugin)| {
-            println!("`{}` (`{}`)", name, plugin.version);
+            println!(
+                "- `{}` (`{}`)",
+                style(name).bold(),
+                style(&plugin.version).bold()
+            );
         });
 
         Ok(())
@@ -116,7 +121,7 @@ impl ListPlugin {
 
 #[derive(Parser)]
 pub struct UninstallPlugin {
-    /// Local name of LogCraft plugin.
+    /// Name of the plugin.
     pub name: Option<String>,
 
     /// Force plugin removal, including all associated services and environments
@@ -130,13 +135,20 @@ impl UninstallPlugin {
             bail!("no plugin installed")
         }
 
+        // Prompt theme
+        let prompt_theme = ColorfulTheme::default();
+
         let name = match self.name {
             Some(name) => name,
-            None => Select::new(
-                "Select the plugin to uninstall:",
-                config.plugins.keys().cloned().collect(),
-            )
-            .prompt()?,
+            None => {
+                let plugins = config.plugins.keys().cloned().collect::<Vec<_>>();
+                let selection = Select::with_theme(&prompt_theme)
+                    .with_prompt("Select the plugin to uninstall:")
+                    .items(&plugins)
+                    .default(0)
+                    .interact()?;
+                plugins[selection].clone()
+            }
         };
 
         if config.plugins.remove(&name).is_none() {
@@ -147,25 +159,25 @@ impl UninstallPlugin {
             .services
             .iter()
             .filter(|svc| svc.plugin == name)
-            .map(|svc| svc.name.clone())
+            .map(|svc| svc.id.clone())
             .collect::<Vec<_>>();
 
         // If removal is not forced, check if plugin is used in any service
         if !self.force
             && !services.is_empty()
-            && !Confirm::new(&format!(
-                "This plugin is used in `{}` services(s), remove with occurences ?",
-                services.join(",")
-            ))
-            .with_default(false)
-            .prompt()?
+            && !Confirm::with_theme(&prompt_theme)
+                .with_prompt(&format!(
+                    "This plugin is used in `{}` services(s), force removal ?",
+                    style(services.join(", ")).red()
+                ))
+                .interact()?
         {
             bail!("action aborted")
         }
 
-        for svc_name in services {
-            config.remove_service(&svc_name);
-            config.unlink_environments(&svc_name)
+        for svc_id in services {
+            config.remove_service(&svc_id);
+            config.unlink_environments(&svc_id)
         }
 
         cleanup_plugin(&name)?;
@@ -175,7 +187,7 @@ impl UninstallPlugin {
 
 #[derive(Parser)]
 pub struct PluginSchema {
-    /// Local name of LogCraft plugin.
+    /// Name of the plugin.
     pub name: Option<String>,
 }
 
@@ -185,12 +197,21 @@ impl PluginSchema {
             bail!("no plugin installed")
         }
 
+        // Prompt theme
+        let prompt_theme = ColorfulTheme::default();
+
         // Prompt name if not set
         let name = match self.name {
             Some(name) => name,
-            None => Select::new("Select the plugin:", config.plugins.keys().collect())
-                .prompt()?
-                .to_owned(),
+            None => {
+                let plugins = config.plugins.keys().cloned().collect::<Vec<_>>();
+                let selection = Select::with_theme(&prompt_theme)
+                    .with_prompt("Select the plugin:")
+                    .items(&plugins)
+                    .default(0)
+                    .interact()?;
+                plugins[selection].clone()
+            }
         };
 
         // Load plugin
@@ -206,7 +227,7 @@ impl PluginSchema {
 
 #[derive(Parser)]
 pub struct UpdatePlugin {
-    /// Local name of LogCraft plugin.
+    /// Name of the plugin.
     pub name: Option<String>,
 }
 
@@ -216,12 +237,21 @@ impl UpdatePlugin {
             bail!("no plugin installed")
         }
 
+        // Prompt theme
+        let prompt_theme = ColorfulTheme::default();
+
         // Prompt name if not set
         let name = match self.name {
             Some(name) => name,
-            None => Select::new("Select the plugin:", config.plugins.keys().collect())
-                .prompt()?
-                .to_owned(),
+            None => {
+                let plugins = config.plugins.keys().cloned().collect::<Vec<_>>();
+                let selection = Select::with_theme(&prompt_theme)
+                    .with_prompt("Select the plugin:")
+                    .items(&plugins)
+                    .default(0)
+                    .interact()?;
+                plugins[selection].clone()
+            }
         };
 
         let plugin = config
@@ -237,13 +267,13 @@ impl UpdatePlugin {
         // ! Not needed for now - Update isn't available for Local source.
         // // Load plugin
         // let meta = PluginManager::new()?.install_plugin(&plugin.source).await?;
-        // println!(
+        // tracing::info!(
         //     "`{}` plugin loaded with version: `{}`",
-        //     &meta.name,
+        //     &meta.id,
         //     &meta.version
         // );
 
-        // config.plugins.insert(meta.name, Plugin {
+        // config.plugins.insert(meta.id, Plugin {
         //     source: plugin.source,
         //     version: meta.version,
         //     description: meta.description,

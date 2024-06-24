@@ -21,6 +21,7 @@ tokio.workspace = true
 futures.workspace = true
 http.workspace = true
 tracing.workspace = true
+tracing-subscriber.workspace = true
 
 wasmtime.workspace = true
 wasmtime-wasi.workspace = true
@@ -29,9 +30,9 @@ wasmtime-wasi-http.workspace = true
 crossbeam-channel = "0.5"
 async-trait = "0.1"
 
-wit-component = "0.210"
-wit-parser = "0.210"
-wasmparser = "0.210"
+wit-component = "0.211"
+wit-parser = "0.211"
+wasmparser = "0.211"
 
 # Temp
 hyper = { version = "1.0.1", features = ["full"] }
