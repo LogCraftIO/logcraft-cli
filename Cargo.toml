@@ -109,5 +109,5 @@ targets = ["aarch64-apple-darwin", "x86_64-apple-darwin", "x86_64-unknown-linux-
 pr-run-mode = "plan"
 # Whether to install an updater program
 install-updater = false
-# Artifacts attestation feature
+# Whether to enable GitHub Attestations
 github-attestations = true
