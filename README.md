@@ -1,6 +1,6 @@
 # LogCraft CLI
 
-LogCraft CLI is an open-source tool developed by [LogCraft](https://www.logcraft.io) that simplifies the creation of Detection-as-Code pipelines while leveraging native Version Control System (VCS) capabilities such as GitLab.
+LogCraft CLI is an open-source tool that simplifies the creation of Detection-as-Code pipelines while leveraging native Version Control System (VCS) capabilities such as GitLab.
 
 With LogCraft CLI, you can easily deploy your security detections into your SIEM, EDR, XDR, and other modern security solutions.
 
@@ -10,12 +10,13 @@ With LogCraft CLI, you can easily deploy your security detections into your SIEM
 
 **Source Code**: <a href="https://github.com/LogCraftIO/logcraft-cli" target="_blank">https://github.com/LogCraftIO/logcraft-cli</a>
 
+**Plugins**: <a href="https://github.com/LogCraftIO/logcraft-cli-plugins" target="_blank">https://github.com/LogCraftIO/logcraft-cli-plugins</a>
+
 ---
 
-## Roadmap
+## Versions
 
-- **Alpha:** Current state, open for testing and feedback.
-- **v0.1.0:** Planned release in June 2024, will include initial stable features.
+- **v0.1.0:** 2024-06-24, initial stable release.
 
 ## Build from sources
 
@@ -50,11 +51,14 @@ Join our public [Slack channel](https://join.slack.com/t/logcraft/shared_invite/
 
 ### Premium Support 
 
-While our project is open source and licensed under the [Mozilla Public License 2.0](./LICENSE), we understand that some users and organizations might require additional support to ensure seamless integration and optimal usage. To cater to these needs, we offer premium support services, which include:
+While our project is open source and licensed under the [Mozilla Public License 2.0](./LICENSE), we understand that some users and organizations might require additional support to ensure seamless integration and optimal usage. To cater to these needs, we offer premium support services, which include dedicated support, priority response, custom solutions, training sessions and more.
 
-- Dedicated Assistance: Get access to our team of experts who are well-versed in every aspect of this project, from threat detection to DevOps operations.
-- Priority Response: Enjoy faster response times for your queries and issues.
-- Custom Solutions: Receive tailored solutions and feature development to meet your specific requirements.
-- Training Sessions: Participate in training sessions to help your team get up to speed with LogCraft efficiently.
+Contact us at hello@logcraft.io to learn more about our premium services
 
-If you're interested in our premium support services, contact us at hello@logcraft.io
+## Contribute!
+
+We warmly invite developers, security enthusiasts, and professionals to connect and contribute to LogCraft CLI. 
+
+Your expertise and insights can greatly enhance LogCraft CLI and whether it's by contributing code, reporting issues, or sharing your unique perspectives, your participation is invaluable to us. 
+
+Join our [community](https://join.slack.com/t/logcraft/shared_invite/zt-2jdw7ntts-yVhw8rIji5ZFpPt_d6HM9w) and help us democratize Detection-as-Code.
