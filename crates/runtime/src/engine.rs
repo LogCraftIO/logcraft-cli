@@ -70,7 +70,7 @@ impl Default for Config {
             .max_component_instance_size(50 * MB as usize)
             .max_core_instances_per_component(200)
             .max_tables_per_component(20)
-            .table_elements(1_000)
+            .table_elements(20_000)
             // The number of memories an instance can have effectively limits the number of inner components
             // a composed component can have (since each inner component has its own memory). We default to 32 for now, and
             // we'll see how often this limit gets reached.
@@ -79,7 +79,8 @@ impl Default for Config {
             .total_tables(2_000)
             // These numbers are completely arbitrary at something above 0.
             .linear_memory_keep_resident((2 * MB) as usize)
-            .table_keep_resident((MB / 2) as usize);
+            .table_keep_resident((MB / 2) as usize)
+            .max_memory_size(50 * MB as usize);
 
         inner.allocation_strategy(InstanceAllocationStrategy::Pooling(pooling_config));
 
