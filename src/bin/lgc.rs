@@ -15,9 +15,9 @@ use lgc::commands::{
     services::ServicesCommands, validate::ValidateCommand,
 };
 use logcraft_common::configuration::{ProjectConfiguration, LGC_CONFIG_PATH};
+use std::path::PathBuf;
 use tracing::Level;
 use tracing_subscriber::EnvFilter;
-use std::path::PathBuf;
 
 #[forbid(unsafe_code)]
 #[tokio::main]
