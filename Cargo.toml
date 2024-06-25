@@ -7,7 +7,7 @@ edition     = { workspace = true }
 license     = { workspace = true }
 
 [workspace.package]
-version = "0.1.0"
+version = "0.1.1"
 authors = ["LogCraft <dev@logcraft.io>"]
 edition = "2021"
 license = "MPL-2.0"
@@ -58,8 +58,8 @@ clap = { version = "4.5", features = ["derive", "env", "cargo"] }
 figment = { version = "0.10", features = ["yaml", "env"] }
 
 # Local dependencies
-logcraft-common = { path = "crates/common", version = "0.1.0" }
-logcraft-runtime = { path = "crates/runtime", version = "0.1.0" }
+logcraft-common = { path = "crates/common", version = "0.1.1" }
+logcraft-runtime = { path = "crates/runtime", version = "0.1.1" }
 
 [target.x86_64-unknown-linux-gnu.dependencies]
 openssl = { version = "0.10", features = ["vendored"] }
