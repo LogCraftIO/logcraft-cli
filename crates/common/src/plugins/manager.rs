@@ -4,7 +4,7 @@
 use anyhow::{anyhow, bail, Result};
 use async_trait::async_trait;
 use logcraft_runtime::{
-    plugin_component::plugin::Metadata, state::State, Config, Engine, Interfaces,
+    plugin_component::plugin::Metadata, state::State, Config, Engine, Plugins,
     DEFAULT_EPOCH_TICK_INTERVAL,
 };
 use serde::{Deserialize, Serialize};
@@ -22,7 +22,7 @@ use crate::plugins::cleanup_plugin;
 use super::LGC_PLUGINS_PATH;
 
 pub struct InstanceData {
-    interface: Interfaces,
+    interface: Plugins,
     pub metadata: Metadata,
 }
 
@@ -85,10 +85,10 @@ impl PluginManager {
         );
 
         let (interface, _) =
-            Interfaces::instantiate_async(&mut store, &component, &self.engine.linker).await?;
+        Plugins::instantiate_async(&mut store, &component, &self.engine.linker).await?;
 
         let metadata = interface
-            .logcraft_host_plugin()
+            .logcraft_lgc_plugin()
             .call_load(&mut store)
             .await?;
 
@@ -143,19 +143,19 @@ pub trait PluginActions: Send + 'static {
 #[async_trait]
 impl PluginActions for InstanceData {
     async fn load(&self, store: &mut Store<State>) -> Result<Metadata> {
-        self.interface.logcraft_host_plugin().call_load(store).await
+        self.interface.logcraft_lgc_plugin().call_load(store).await
     }
 
     async fn settings(&self, store: &mut Store<State>) -> Result<String> {
         self.interface
-            .logcraft_host_plugin()
+            .logcraft_lgc_plugin()
             .call_settings(store)
             .await
     }
 
     async fn schema(&self, store: &mut Store<State>) -> Result<String> {
         self.interface
-            .logcraft_host_plugin()
+            .logcraft_lgc_plugin()
             .call_schema(store)
             .await
     }
@@ -168,7 +168,7 @@ impl PluginActions for InstanceData {
         params: &str,
     ) -> Result<Option<String>> {
         self.interface
-            .logcraft_host_plugin()
+            .logcraft_lgc_plugin()
             .call_create(store, config, name, params)
             .await
             .map_err(|e| {
@@ -195,7 +195,7 @@ impl PluginActions for InstanceData {
         params: &str,
     ) -> Result<Option<String>> {
         self.interface
-            .logcraft_host_plugin()
+            .logcraft_lgc_plugin()
             .call_read(store, config, name, params)
             .await?
             .map_err(|e| {
@@ -215,7 +215,7 @@ impl PluginActions for InstanceData {
         params: &str,
     ) -> Result<Option<String>> {
         self.interface
-            .logcraft_host_plugin()
+            .logcraft_lgc_plugin()
             .call_update(store, config, name, params)
             .await?
             .map_err(|e| {
@@ -235,7 +235,7 @@ impl PluginActions for InstanceData {
         params: &str,
     ) -> Result<Option<String>> {
         self.interface
-            .logcraft_host_plugin()
+            .logcraft_lgc_plugin()
             .call_delete(store, config, name, params)
             .await?
             .map_err(|e| {
@@ -249,7 +249,7 @@ impl PluginActions for InstanceData {
 
     async fn ping(&self, store: &mut Store<State>, config: &str) -> Result<bool> {
         self.interface
-            .logcraft_host_plugin()
+            .logcraft_lgc_plugin()
             .call_ping(store, config)
             .await?
             .map_err(|e| {
