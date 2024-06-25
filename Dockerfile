@@ -10,10 +10,8 @@ ENV SYSROOT=/dummy
 RUN apk update && apk add --no-cache \
     g++ \
     musl-dev \
-    pkgconfig \
     libressl-dev \
-    protobuf-dev \
-    protoc
+    protobuf-dev
 
 ENV PROTOC=/usr/bin/protoc
 
@@ -23,16 +21,16 @@ COPY . /wd
 RUN cargo build --bin lgc --release
 
 # -----
-FROM cgr.dev/chainguard/wolfi-base
+FROM cgr.dev/chainguard/wolfi-base:latest
 
-ARG description="Easily build Detection-as-Code pipelines for modern security tools (SIEM, EDR, XDR, ...)"
-LABEL name="lgc" \
-      maintainer="dev@logcraft.io" \
-      vendor="LogCraft" \
-      license="MPL-2.0" \
-      summary="Detection-as-Code CLI" \
-      description=${description}
-LABEL org.opencontainers.image.description ${description}
+LABEL org.opencontainers.image.title            "LogCraft CLI"
+LABEL org.opencontainers.image.authors          "LogCraft <dev@logcraft.io>"
+LABEL org.opencontainers.image.url              "https://github.com/LogCraftIO/logcraft-cli/pkgs/container/logcraft-cli"
+LABEL org.opencontainers.image.documentation    "https://docs.logcraft.io/"
+LABEL org.opencontainers.image.source           "https://github.com/LogCraftIO/logcraft-cli"
+LABEL org.opencontainers.image.vendor           "LogCraft"
+LABEL org.opencontainers.image.licenses         "MPL-2.0"
+LABEL org.opencontainers.image.description      "Easily build Detection-as-Code pipelines for modern security tools (SIEM, EDR, XDR, ...)"
 
 WORKDIR /wd
 RUN chown -R nonroot.nonroot /wd/

@@ -82,7 +82,7 @@ inquire = "0.7"
 console = "0.15"
 dialoguer = "0.11"
 rayon = "1.10.0"
-dashmap = "5.5"
+dashmap = "6.0"
 tracing = {version = "0.1", features = ["log"] }
 tracing-subscriber = {version = "0.3", features = ["env-filter", "fmt", "std"] }
 

@@ -85,7 +85,7 @@ impl PluginManager {
         );
 
         let (interface, _) =
-        Plugins::instantiate_async(&mut store, &component, &self.engine.linker).await?;
+            Plugins::instantiate_async(&mut store, &component, &self.engine.linker).await?;
 
         let metadata = interface
             .logcraft_lgc_plugin()
