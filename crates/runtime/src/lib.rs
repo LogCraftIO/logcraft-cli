@@ -16,6 +16,6 @@ wasmtime::component::bindgen!({
 });
 
 pub mod plugin_component {
-    pub use crate::exports::logcraft::host::plugin;
-    pub use crate::Interfaces;
+    pub use crate::exports::logcraft::lgc::plugin;
+    pub use crate::Plugins;
 }

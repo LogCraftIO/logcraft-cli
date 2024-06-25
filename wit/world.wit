@@ -1,10 +1,10 @@
 // Copyright (c) 2023 LogCraft, SAS.
 // SPDX-License-Identifier: MPL-2.0
 
-package logcraft:host;
+package logcraft:lgc@0.1.0;
 
 /// The logcraft world for the component to target.
-world interfaces {
+world plugins {
   // Imports
 
   // Exports
