@@ -55,7 +55,7 @@ impl ValidateCommand {
                 let check = serv.validate_code(&args)?;
                 if !check.success {
                     has_err = true;
-                    tracing::error!("`{}`", check.err_message);
+                    tracing::error!("{}", check.err_message);
                 }
             }
 
@@ -67,7 +67,7 @@ impl ValidateCommand {
                 let check = serv.validate_code(&args)?;
                 if !check.success {
                     has_err = true;
-                    tracing::error!("`{}`", check.err_message);
+                    tracing::error!("{}", check.err_message);
                 }
             }
         }

@@ -15,6 +15,8 @@ use lgc::commands::{
     services::ServicesCommands, validate::ValidateCommand,
 };
 use logcraft_common::configuration::{ProjectConfiguration, LGC_CONFIG_PATH};
+use tracing::Level;
+use tracing_subscriber::EnvFilter;
 use std::path::PathBuf;
 
 #[forbid(unsafe_code)]
@@ -73,6 +75,14 @@ impl LogCraftCli {
 
         let matches = LogCraftCli::command().styles(styles).get_matches();
         let mut cli = LogCraftCli::from_arg_matches(&matches)?;
+
+        tracing_subscriber::fmt()
+            .with_writer(std::io::stdout)
+            .with_target(false)
+            .without_time()
+            .with_env_filter(EnvFilter::from_env("LGC_LOG"))
+            .with_max_level(Level::INFO)
+            .init();
 
         // Load configuration
         match cli.commands {
