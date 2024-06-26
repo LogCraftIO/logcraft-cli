@@ -23,7 +23,7 @@ use tracing_subscriber::EnvFilter;
 #[tokio::main]
 async fn main() {
     if let Err(err) = LogCraftCli::init().await {
-        eprintln!("{err}");
+        tracing::error!("{err}");
         std::process::exit(1);
     }
 }
@@ -97,13 +97,12 @@ impl LogCraftCli {
                     {
                         Ok(config) => config,
                         Err(e) => {
-                            eprintln!("error: unable to load configuration: {}", e);
+                            tracing::error!("unable to load configuration: {}", e);
                             std::process::exit(1)
                         }
                     };
                 } else {
-                    eprintln!(
-                        "error: unable to find configuration file\nRun `lgc init` to initialize a new project");
+                    tracing::error!("unable to find configuration file, run `lgc init` to initialize a new project");
                     std::process::exit(1)
                 }
             }
