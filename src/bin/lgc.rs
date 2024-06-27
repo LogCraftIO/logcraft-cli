@@ -7,7 +7,7 @@ use anyhow::Result;
 use clap::builder::styling;
 use clap::{crate_version, Subcommand};
 use clap::{CommandFactory, FromArgMatches, Parser};
-use figment::providers::{Format, Yaml};
+use figment::providers::{Env, Format, Yaml};
 use figment::Figment;
 use lgc::commands::{
     deploy::DeployCommand, destroy::DestroyCommand, diff::DiffCommand,
@@ -15,6 +15,9 @@ use lgc::commands::{
     services::ServicesCommands, validate::ValidateCommand,
 };
 use logcraft_common::configuration::{ProjectConfiguration, LGC_CONFIG_PATH};
+use logcraft_common::utils::env_forbidden_chars;
+use std::collections::HashMap;
+use std::{env, fs};
 use std::path::PathBuf;
 use tracing::Level;
 use tracing_subscriber::EnvFilter;
@@ -89,10 +92,29 @@ impl LogCraftCli {
             LogCraftCommands::Init(cmd) => return cmd.run(),
             _ => {
                 let configuration_path = PathBuf::from(LGC_CONFIG_PATH);
+
                 if configuration_path.is_file() {
+                    let mut configuration_file = fs::read_to_string(configuration_path)?;
+
+                    // Environment variables substitution
+                    if envsubst::is_templated(&configuration_file) {
+                        configuration_file = envsubst::substitute(
+                            configuration_file,
+                            &env::vars()
+                                .filter_map(|(key, value)| {
+                                    if !env_forbidden_chars(&key) && !env_forbidden_chars(&value) {
+                                        Some((key, value))
+                                    } else {
+                                        None
+                                    }
+                                })
+                                .collect::<HashMap<String, String>>()
+                        )?;
+                    }
+
                     cli.config = match Figment::new()
-                        .merge(Yaml::file(LGC_CONFIG_PATH))
-                        // .merge(Env::prefixed("LGC_"))
+                        .merge(Yaml::string(&configuration_file))
+                        .merge(Env::prefixed("LGC_").split("_"))
                         .extract()
                     {
                         Ok(config) => config,

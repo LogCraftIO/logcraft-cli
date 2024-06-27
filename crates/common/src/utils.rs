@@ -44,3 +44,12 @@ pub fn ensure_kebab_case(name: &str) -> Result<&str> {
 
     Ok(name)
 }
+
+pub fn env_forbidden_chars(s: &str) -> bool {
+    for c in s.chars() {
+        if c == '$' || c == '{' || c == '}' {
+            return true;
+        }
+    }
+    false
+}
