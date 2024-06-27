@@ -18,6 +18,25 @@ With LogCraft CLI, you can easily deploy your security detections into your SIEM
 
 - **v0.1.0:** 2024-06-24, initial stable release.
 
+## Download LogCraft CLI
+To download the latest stable version of LogCraft CLI, simply [go to the release page](https://github.com/LogCraftIO/logcraft-cli/releases) and pick the latest available version for your architecture.
+
+Once downloaded, add the `lgc` binary to your PATH, for example in `/usr/local/bin`
+
+```bash
+~$ tar xf lgc-x86_64-unknown-linux-gnu.tar.xz
+~$ sudo cp lgc-x86_64-unknown-linux-gnu/lgc /usr/local/bin/
+```
+Finally, ensure lgc is correctly installed
+
+```bash
+~$ cd
+~$ lgc --version
+LogCraft CLI v0.1.0
+~$
+```
+Congratulation, LogCraft CLI is installed and working :tada:
+
 ## Build from sources
 
 ```bash
