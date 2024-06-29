@@ -1,3 +1,6 @@
+// Copyright (c) 2023 LogCraft, SAS.
+// SPDX-License-Identifier: MPL-2.0
+
 use super::State;
 use anyhow::Result;
 use async_trait::async_trait;

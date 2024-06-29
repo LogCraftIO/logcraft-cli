@@ -1,3 +1,6 @@
+// Copyright (c) 2023 LogCraft, SAS.
+// SPDX-License-Identifier: MPL-2.0
+
 use std::collections::HashMap;
 use std::str::FromStr;
 use std::time::Duration;
