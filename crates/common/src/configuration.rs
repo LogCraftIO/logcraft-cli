@@ -28,6 +28,7 @@ pub const LGC_CONFIG_PATH: &str = "lgc.yaml";
 pub const LGC_RULES_DIR: &str = "rules";
 
 use crate::plugins::Plugin;
+use crate::state::backends::StateBackend;
 use crate::utils::ensure_kebab_case;
 
 /// ProjectConfiguration definition
@@ -36,6 +37,8 @@ use crate::utils::ensure_kebab_case;
 /// Hash is calculated for the name field to provide unique objects.
 #[derive(Serialize, Deserialize, Default, Clone)]
 pub struct ProjectConfiguration {
+    #[serde(default)]
+    pub state: StateBackend,
     pub plugins: BTreeMap<String, Plugin>,
     pub environments: BTreeSet<Environment>,
     pub services: BTreeSet<Service>,

@@ -12,7 +12,6 @@ use logcraft_common::{
         ServiceDetections,
     },
     plugins::manager::{PluginActions, PluginManager},
-    state::State,
 };
 use serde_json::Value;
 use std::collections::{HashMap, HashSet};
@@ -148,7 +147,15 @@ impl DiffCommand {
 
         let changes = compare_detections(&detections, &returned_rules, &services, true).is_empty();
 
-        if State::read()?.missing_rules(&returned_rules).is_empty() && changes && !has_diff {
+        if config
+            .state
+            .load()
+            .await?
+            .missing_rules(&returned_rules, false)
+            .is_empty()
+            && changes
+            && !has_diff
+        {
             tracing::info!("no differences found");
         }
 
