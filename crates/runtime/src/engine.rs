@@ -84,6 +84,11 @@ impl Default for Config {
 
         inner.allocation_strategy(InstanceAllocationStrategy::Pooling(pooling_config));
 
+        #[cfg(target_env = "musl")]
+        // Disable native unwinding on musl 
+        // See https://github.com/bytecodealliance/wasmtime/issues/1904
+        inner.native_unwind_info(false);
+        
         Self { inner }
     }
 }
