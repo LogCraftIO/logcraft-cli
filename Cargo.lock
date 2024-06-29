@@ -467,9 +467,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.0.100"
+version = "1.0.102"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c891175c3fb232128f48de6590095e59198bbeb8620c310be349bfc3afd12c7b"
+checksum = "779e6b7d17797c0b42023d417228c02889300190e700cb074c3438d9c541d332"
 dependencies = [
  "jobserver",
  "libc",
@@ -505,9 +505,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.5.7"
+version = "4.5.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5db83dced34638ad474f39f250d7fea9598bdd239eaced1bdf45d597da0f433f"
+checksum = "84b3edb18336f4df585bc9aa31dd99c036dfa5dc5e9a2939a722a188f3a8970d"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -515,9 +515,9 @@ dependencies = [
 
 [[package]]
 name = "clap_builder"
-version = "4.5.7"
+version = "4.5.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f7e204572485eb3fbf28f871612191521df159bc3e15a9f5064c66dba3a8c05f"
+checksum = "c1c09dd5ada6c6c78075d6fd0da3f90d8080651e2d6cc8eb2f1aaa4034ced708"
 dependencies = [
  "anstream",
  "anstyle",
@@ -527,9 +527,9 @@ dependencies = [
 
 [[package]]
 name = "clap_derive"
-version = "4.5.5"
+version = "4.5.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c780290ccf4fb26629baa7a1081e68ced113f1d3ec302fa5948f1c381ebf06c6"
+checksum = "2bac35c6dafb060fd4d275d9a4ffae97917c13a6327903a8be2153cd964f7085"
 dependencies = [
  "heck 0.5.0",
  "proc-macro2",
@@ -841,41 +841,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "darling"
-version = "0.20.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "83b2eb4d90d12bdda5ed17de686c2acb4c57914f8f921b8da7e112b5a36f3fe1"
-dependencies = [
- "darling_core",
- "darling_macro",
-]
-
-[[package]]
-name = "darling_core"
-version = "0.20.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "622687fe0bac72a04e5599029151f5796111b90f1baaa9b544d807a5e31cd120"
-dependencies = [
- "fnv",
- "ident_case",
- "proc-macro2",
- "quote",
- "strsim 0.11.1",
- "syn 2.0.68",
-]
-
-[[package]]
-name = "darling_macro"
-version = "0.20.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "733cabb43482b1a1b53eee8583c2b9e8684d592215ea83efd305dd31bc2f0178"
-dependencies = [
- "darling_core",
- "quote",
- "syn 2.0.68",
-]
-
-[[package]]
 name = "dashmap"
 version = "5.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -918,7 +883,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b42b6fa04a440b495c8b04d0e71b707c585f83cb9cb28cf8cd0d976c315e31b4"
 dependencies = [
  "powerfmt",
- "serde",
 ]
 
 [[package]]
@@ -1056,9 +1020,9 @@ checksum = "0d6ef0072f8a535281e4876be788938b528e9a1d43900b82c2569af7da799125"
 
 [[package]]
 name = "either"
-version = "1.12.0"
+version = "1.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3dca9240753cf90908d7e4aac30f630662b02aebaa1b58a3cadabdb23385b58b"
+checksum = "60b1af1c220855b6ceac025d3f6ecdd2b7c4894bfe9cd9bda4fbb4bc7c0d4cf0"
 
 [[package]]
 name = "embedded-io"
@@ -1619,12 +1583,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d231dfb89cfffdbc30e7fc41579ed6066ad03abda9e567ccafae602b97ec5024"
 
 [[package]]
-name = "hex"
-version = "0.4.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
-
-[[package]]
 name = "hmac"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1808,12 +1766,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "25a2bc672d1148e28034f176e01fffebb08b35768468cc954630da77a1449005"
 
 [[package]]
-name = "ident_case"
-version = "1.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
-
-[[package]]
 name = "idna"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1846,7 +1798,6 @@ dependencies = [
  "autocfg",
  "hashbrown 0.12.3",
  "rustc-rayon 0.5.0",
- "serde",
 ]
 
 [[package]]
@@ -2102,7 +2053,7 @@ dependencies = [
 [[package]]
 name = "kcl-language-server"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2146,7 +2097,7 @@ dependencies = [
 [[package]]
 name = "kclvm-api"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "anyhow",
  "futures",
@@ -2185,7 +2136,7 @@ dependencies = [
 [[package]]
 name = "kclvm-ast"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "compiler_base_span",
  "kclvm-error",
@@ -2200,7 +2151,7 @@ dependencies = [
 [[package]]
 name = "kclvm-ast-pretty"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "compiler_base_macros",
  "compiler_base_session",
@@ -2214,7 +2165,7 @@ dependencies = [
 [[package]]
 name = "kclvm-compiler"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "ahash 0.7.8",
  "bit-set",
@@ -2234,7 +2185,7 @@ dependencies = [
 [[package]]
 name = "kclvm-config"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "ahash 0.7.8",
  "anyhow",
@@ -2258,7 +2209,7 @@ dependencies = [
 [[package]]
 name = "kclvm-driver"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "anyhow",
  "flate2",
@@ -2283,7 +2234,7 @@ dependencies = [
 [[package]]
 name = "kclvm-error"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "annotate-snippets",
  "anyhow",
@@ -2306,7 +2257,7 @@ dependencies = [
 [[package]]
 name = "kclvm-evaluator"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "anyhow",
  "generational-arena",
@@ -2320,7 +2271,7 @@ dependencies = [
 [[package]]
 name = "kclvm-lexer"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "kclvm-error",
  "rustc_lexer",
@@ -2330,7 +2281,7 @@ dependencies = [
 [[package]]
 name = "kclvm-loader"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "anyhow",
  "indexmap 1.9.3",
@@ -2346,7 +2297,7 @@ dependencies = [
 [[package]]
 name = "kclvm-macros"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2357,7 +2308,7 @@ dependencies = [
 [[package]]
 name = "kclvm-parser"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "anyhow",
  "bstr",
@@ -2388,7 +2339,7 @@ dependencies = [
 [[package]]
 name = "kclvm-query"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "anyhow",
  "compiler_base_macros",
@@ -2408,7 +2359,7 @@ dependencies = [
 [[package]]
 name = "kclvm-runner"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "anyhow",
  "cc",
@@ -2443,7 +2394,7 @@ dependencies = [
 [[package]]
 name = "kclvm-runtime"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "ahash 0.7.8",
  "base64 0.13.1",
@@ -2476,7 +2427,7 @@ dependencies = [
 [[package]]
 name = "kclvm-sema"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "ahash 0.7.8",
  "anyhow",
@@ -2509,7 +2460,7 @@ dependencies = [
 [[package]]
 name = "kclvm-span"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "compiler_base_span",
  "kclvm-macros",
@@ -2520,7 +2471,7 @@ dependencies = [
 [[package]]
 name = "kclvm-tools"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "anyhow",
  "compiler_base_session",
@@ -2551,7 +2502,7 @@ dependencies = [
 [[package]]
 name = "kclvm-utils"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "anyhow",
  "fslock",
@@ -2561,7 +2512,7 @@ dependencies = [
 [[package]]
 name = "kclvm-version"
 version = "0.9.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "vergen",
 ]
@@ -2569,7 +2520,7 @@ dependencies = [
 [[package]]
 name = "kclvm_runtime_internal_macros"
 version = "0.5.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2707,9 +2658,9 @@ dependencies = [
 
 [[package]]
 name = "log"
-version = "0.4.21"
+version = "0.4.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "90ed8c1e510134f979dbc4f070f87d4313098b704861a105fe34231c70a3901c"
+checksum = "a7a70ba024b9dc04c27ea2f0c0548feb474ec5c54bba33a7f72f873a39d07b24"
 
 [[package]]
 name = "logcraft-common"
@@ -2727,11 +2678,9 @@ dependencies = [
  "kclvm-sema",
  "logcraft-runtime",
  "rayon",
- "regex",
  "reqwest",
  "serde",
  "serde_json",
- "serde_with",
  "serde_yaml_ng",
  "similar",
  "tempfile",
@@ -3005,9 +2954,9 @@ dependencies = [
 
 [[package]]
 name = "num-bigint"
-version = "0.4.5"
+version = "0.4.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c165a9ab64cf766f73521c0dd2cfdff64f488b8f0b3e621face3462d3db536d7"
+checksum = "a5e44f723f1133c9deac646763579fdb3ac745e418f2a7af9cd0c431da1f20b9"
 dependencies = [
  "num-integer",
  "num-traits",
@@ -3064,9 +3013,9 @@ checksum = "830b246a0e5f20af87141b25c173cd1b609bd7779a4617d6ec582abaf90870f3"
 
 [[package]]
 name = "object"
-version = "0.36.0"
+version = "0.36.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "576dfe1fc8f9df304abb159d767a29d0476f7750fbf8aa7ad07816004a207434"
+checksum = "081b846d1d56ddfc18fdf1a922e4f6e07a11768ea1b92dec44e42b72712ccfce"
 dependencies = [
  "crc32fast",
  "hashbrown 0.14.5",
@@ -3506,7 +3455,7 @@ dependencies = [
 [[package]]
 name = "proc_macro_crate"
 version = "0.1.0"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3570,7 +3519,7 @@ dependencies = [
 [[package]]
 name = "prost-wkt"
 version = "0.4.1"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "chrono",
  "inventory",
@@ -3584,7 +3533,7 @@ dependencies = [
 [[package]]
 name = "prost-wkt-build"
 version = "0.4.1"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "heck 0.4.1",
  "prost",
@@ -3596,7 +3545,7 @@ dependencies = [
 [[package]]
 name = "prost-wkt-types"
 version = "0.4.1"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "chrono",
  "prost",
@@ -4410,36 +4359,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "serde_with"
-version = "3.8.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ad483d2ab0149d5a5ebcd9972a3852711e0153d863bf5a5d0391d28883c4a20"
-dependencies = [
- "base64 0.22.1",
- "chrono",
- "hex",
- "indexmap 1.9.3",
- "indexmap 2.2.6",
- "serde",
- "serde_derive",
- "serde_json",
- "serde_with_macros",
- "time 0.3.36",
-]
-
-[[package]]
-name = "serde_with_macros"
-version = "3.8.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "65569b702f41443e8bc8bbb1c5779bd0450bbe723b56198980e80ec45780bce2"
-dependencies = [
- "darling",
- "proc-macro2",
- "quote",
- "syn 2.0.68",
-]
-
-[[package]]
 name = "serde_yaml"
 version = "0.9.34+deprecated"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4455,7 +4374,7 @@ dependencies = [
 [[package]]
 name = "serde_yaml"
 version = "0.9.34+deprecated"
-source = "git+https://github.com/kcl-lang/kcl#82bff23308f571db016e20960f71c7f6aea82328"
+source = "git+https://github.com/kcl-lang/kcl#8d766a12f14ecd37709844dbce34a3d906941106"
 dependencies = [
  "indexmap 2.2.6",
  "itoa",
@@ -5674,6 +5593,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "wasm-encoder"
+version = "0.212.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "501940df4418b8929eb6d52f1aade1fdd15a5b86c92453cb696e3c906bd3fc33"
+dependencies = [
+ "leb128",
+]
+
+[[package]]
 name = "wasm-metadata"
 version = "0.211.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6058,24 +5986,24 @@ dependencies = [
 
 [[package]]
 name = "wast"
-version = "211.0.1"
+version = "212.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b25506dd82d00da6b14a87436b3d52b1d264083fa79cdb72a0d1b04a8595ccaa"
+checksum = "4606a05fb0aae5d11dd7d8280a640d88a63ee019360ba9be552da3d294b8d1f5"
 dependencies = [
  "bumpalo",
  "leb128",
  "memchr",
  "unicode-width",
- "wasm-encoder 0.211.1",
+ "wasm-encoder 0.212.0",
 ]
 
 [[package]]
 name = "wat"
-version = "1.211.1"
+version = "1.212.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eb716ca6c86eecac2d82541ffc39860118fc0af9309c4f2670637bea2e1bdd7d"
+checksum = "c74ca7f93f11a5d6eed8499f2a8daaad6e225cab0151bc25a091fff3b987532f"
 dependencies = [
- "wast 211.0.1",
+ "wast 212.0.0",
 ]
 
 [[package]]
