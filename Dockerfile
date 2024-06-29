@@ -8,15 +8,14 @@ ENV SYSROOT=/dummy
 
 # Install dependencies
 RUN apk update && apk add --no-cache \
-    g++ \
     musl-dev \
     libressl-dev \
     protobuf-dev
 
 ENV PROTOC=/usr/bin/protoc
 
-WORKDIR /wd
-COPY . /wd
+WORKDIR /build
+COPY . /build
 
 RUN cargo build --bin lgc --release
 
@@ -32,9 +31,9 @@ LABEL org.opencontainers.image.vendor           "LogCraft"
 LABEL org.opencontainers.image.licenses         "MPL-2.0"
 LABEL org.opencontainers.image.description      "Easily build Detection-as-Code pipelines for modern security tools (SIEM, EDR, XDR, ...)"
 
-WORKDIR /wd
-RUN chown -R nonroot.nonroot /wd/
+WORKDIR /srv/workspace
+RUN chown -R nonroot.nonroot /srv/workspace
 USER nonroot
 
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-COPY --from=builder /wd/target/release/lgc /usr/local/bin/lgc
+COPY --from=builder /build/target/release/lgc /usr/local/bin/lgc
