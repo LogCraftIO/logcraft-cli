@@ -7,6 +7,7 @@ use anyhow::Result;
 use clap::builder::styling;
 use clap::{crate_version, Subcommand};
 use clap::{CommandFactory, FromArgMatches, Parser};
+use console::{set_colors_enabled, set_colors_enabled_stderr};
 use figment::providers::{Env, Format, Yaml};
 use figment::Figment;
 use lgc::commands::{
@@ -75,6 +76,12 @@ impl LogCraftCli {
             .header(styling::AnsiColor::Green.on_default().bold().underline())
             .usage(styling::AnsiColor::Green.on_default().bold().underline())
             .literal(styling::AnsiColor::Blue.on_default().bold());
+
+        // Forces tty colors
+        if env::var("LGC_FORCE_COLORS").is_ok_and(|t| &t == "true") {
+            set_colors_enabled(true);
+            set_colors_enabled_stderr(true);
+        }
 
         let matches = LogCraftCli::command().styles(styles).get_matches();
         let mut cli = LogCraftCli::from_arg_matches(&matches)?;
