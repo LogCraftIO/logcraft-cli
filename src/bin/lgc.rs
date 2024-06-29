@@ -18,8 +18,8 @@ use lgc::commands::{
 use logcraft_common::configuration::{ProjectConfiguration, LGC_CONFIG_PATH};
 use logcraft_common::utils::env_forbidden_chars;
 use std::collections::HashMap;
-use std::{env, fs};
 use std::path::PathBuf;
+use std::{env, fs};
 use tracing::Level;
 use tracing_subscriber::EnvFilter;
 
@@ -115,7 +115,7 @@ impl LogCraftCli {
                                         None
                                     }
                                 })
-                                .collect::<HashMap<String, String>>()
+                                .collect::<HashMap<String, String>>(),
                         )?;
                     }
 
