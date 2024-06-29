@@ -11,7 +11,6 @@ use logcraft_common::{
     configuration::{Environment, ProjectConfiguration, Service},
     detections::{compare_detections, map_plugin_detections, DetectionState, ServiceDetections},
     plugins::manager::{PluginActions, PluginManager},
-    state::State,
 };
 use serde_json::Value;
 use tokio::task::JoinSet;
@@ -149,8 +148,8 @@ impl DeployCommand {
                     }
                 }
 
-                let mut state = State::read()?;
-                let to_remove = state.missing_rules(&returned_rules);
+                let mut state = config.state.load().await?;
+                let to_remove = state.missing_rules(&returned_rules, self.auto_approve);
                 let changed =
                     compare_detections(&detections, &returned_rules, &services, !self.auto_approve);
 
@@ -186,7 +185,7 @@ impl DeployCommand {
                                             )
                                         }
                                         Err(e) => {
-                                            state.write()?;
+                                            state.save(&config.state).await?;
                                             bail!(
                                                 "on update for `{}` in `{}`: {}",
                                                 style(&rule.name).red(),
@@ -220,7 +219,7 @@ impl DeployCommand {
                                             )
                                         }
                                         Err(e) => {
-                                            state.write()?;
+                                            state.save(&config.state).await?;
                                             bail!(
                                                 "on update for `{}` in `{}`: {}",
                                                 style(&rule.name).red(),
@@ -254,7 +253,7 @@ impl DeployCommand {
                                             );
                                         }
                                         Err(e) => {
-                                            state.write()?;
+                                            state.save(&config.state).await?;
                                             bail!(
                                                 "on deletion for `{}` in `{}`: {}",
                                                 style(&rule.name).red(),
@@ -266,11 +265,21 @@ impl DeployCommand {
                                 }
                             }
                         }
-                        state.write()?;
+                        state.save(&config.state).await?;
                     } else {
                         bail!("action aborted")
                     }
                 } else {
+                    // Update state to include any missing rules detected
+                    if returned_rules
+                        .iter()
+                        .any(|(k, v)| state.services.get(k) != Some(v))
+                    {
+                        tracing::info!("including unchanged remote detection rules that are not currently referenced in state");
+                        state.services.extend(returned_rules);
+                        state.save(&config.state).await?;
+                    }
+
                     tracing::info!("no differences found");
                 }
             }

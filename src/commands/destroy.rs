@@ -8,7 +8,6 @@ use dialoguer::{theme::ColorfulTheme, Confirm, Select};
 use logcraft_common::{
     configuration::{Environment, ProjectConfiguration, Service},
     plugins::manager::{PluginActions, PluginManager},
-    state::State,
 };
 use std::collections::HashMap;
 use tokio::task::JoinSet;
@@ -34,7 +33,7 @@ pub struct DestroyCommand {
 impl DestroyCommand {
     pub async fn run(self, config: &ProjectConfiguration) -> Result<()> {
         // Load all detections
-        let mut state = State::read()?;
+        let mut state = config.state.load().await?;
 
         // Prompt theme
         let prompt_theme = ColorfulTheme::default();
@@ -171,7 +170,7 @@ impl DestroyCommand {
                                         service.remove(&rule_state);
                                     }
                                     Err(e) => {
-                                        state.write()?;
+                                        state.save(&config.state).await?;
                                         bail!(
                                             "on deletion for `{}` in `{}`: {}",
                                             style(&rule_state.name).red(),
@@ -193,6 +192,6 @@ impl DestroyCommand {
             }
         }
 
-        state.write()
+        state.save(&config.state).await
     }
 }

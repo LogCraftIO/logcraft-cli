@@ -21,7 +21,7 @@ serde_yaml_ng.workspace = true
 url.workspace = true
 tokio.workspace = true
 tokio-util.workspace = true
-reqwest = { workspace = true, features = ["stream"] }
+reqwest.workspace = true
 wasmtime.workspace = true
 serde_json.workspace = true
 inquire.workspace = true
@@ -40,6 +40,8 @@ async-trait = "0.1"
 tempfile = "3.10"
 uuid = "1.8"
 similar = "2.5"
+regex = "1.10"
+serde_with = "3.8"
 
 # Local dependencies
 logcraft-runtime = { path = "../runtime" }
