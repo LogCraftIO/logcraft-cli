@@ -1,4 +1,0 @@
-[submodule "plugins"]
-	path = plugins
-	url = https://github.com/LogCraftIO/logcraft-cli-plugins.git
-	branch = main
