@@ -1,5 +1,5 @@
 # -----
-FROM docker.io/library/rust:1.78-alpine as builder
+FROM docker.io/library/rust:1.78-alpine AS builder
 
 # Set `SYSROOT` to a dummy path (default is /usr) because pkg-config-rs *always*
 # links those located in that path dynamically but we want static linking, c.f.
@@ -22,14 +22,14 @@ RUN cargo build --bin lgc --release
 # -----
 FROM cgr.dev/chainguard/wolfi-base:latest
 
-LABEL org.opencontainers.image.title            "LogCraft CLI"
-LABEL org.opencontainers.image.authors          "LogCraft <dev@logcraft.io>"
-LABEL org.opencontainers.image.url              "https://github.com/LogCraftIO/logcraft-cli/pkgs/container/logcraft-cli"
-LABEL org.opencontainers.image.documentation    "https://docs.logcraft.io/"
-LABEL org.opencontainers.image.source           "https://github.com/LogCraftIO/logcraft-cli"
-LABEL org.opencontainers.image.vendor           "LogCraft"
-LABEL org.opencontainers.image.licenses         "MPL-2.0"
-LABEL org.opencontainers.image.description      "Easily build Detection-as-Code pipelines for modern security tools (SIEM, EDR, XDR, ...)"
+LABEL org.opencontainers.image.title="LogCraft CLI"
+LABEL org.opencontainers.image.authors="LogCraft <dev@logcraft.io>"
+LABEL org.opencontainers.image.url="https://github.com/LogCraftIO/logcraft-cli/pkgs/container/logcraft-cli"
+LABEL org.opencontainers.image.documentation="https://docs.logcraft.io/"
+LABEL org.opencontainers.image.source="https://github.com/LogCraftIO/logcraft-cli"
+LABEL org.opencontainers.image.vendor="LogCraft"
+LABEL org.opencontainers.image.licenses="MPL-2.0"
+LABEL org.opencontainers.image.description="Easily build Detection-as-Code pipelines for modern security tools (SIEM, EDR, XDR, ...)"
 
 WORKDIR /srv/workspace
 RUN chown -R nonroot.nonroot /srv/workspace
