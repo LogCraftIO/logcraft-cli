@@ -1,7 +1,7 @@
 // Copyright (c) 2023 LogCraft, SAS.
 // SPDX-License-Identifier: MPL-2.0
 
-#![warn(unused_extern_crates)]
+#![forbid(unsafe_code)]
 
 use anyhow::Result;
 use clap::builder::styling;
