@@ -59,8 +59,8 @@ figment = { version = "0.10", features = ["yaml", "env"] }
 envsubst = "0.2"
 
 # Local dependencies
-logcraft-common = { path = "crates/common", version = "0.1.3" }
-logcraft-runtime = { path = "crates/runtime", version = "0.1.3" }
+lgc-common = { path = "crates/common", version = "0.1.3" }
+lgc-runtime = { path = "crates/runtime", version = "0.1.3" }
 
 [target.x86_64-unknown-linux-gnu.dependencies]
 openssl = { version = "0.10", features = ["vendored"] }

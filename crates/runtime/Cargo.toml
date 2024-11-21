@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MPL-2.0
 
 [package]
-name = "logcraft-runtime"
+name = "lgc-runtime"
 version.workspace = true
 authors.workspace = true
 edition.workspace = true

@@ -2622,8 +2622,8 @@ dependencies = [
  "futures",
  "indicatif",
  "kclvm-api",
- "logcraft-common",
- "logcraft-runtime",
+ "lgc-common",
+ "lgc-runtime",
  "openssl",
  "rayon",
  "serde",
@@ -2635,6 +2635,62 @@ dependencies = [
  "tracing-subscriber",
  "url",
  "wasmtime",
+]
+
+[[package]]
+name = "lgc-common"
+version = "0.1.3"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "console",
+ "dashmap 6.0.1",
+ "dialoguer",
+ "futures",
+ "inquire",
+ "kclvm-api",
+ "kclvm-query",
+ "kclvm-sema",
+ "lgc-runtime",
+ "rayon",
+ "regex",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "serde_with",
+ "serde_yaml_ng",
+ "similar",
+ "tempfile",
+ "tokio",
+ "tokio-util 0.7.11",
+ "tracing",
+ "tracing-subscriber",
+ "url",
+ "uuid",
+ "wasmtime",
+]
+
+[[package]]
+name = "lgc-runtime"
+version = "0.1.3"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "crossbeam-channel",
+ "futures",
+ "http",
+ "http-body-util",
+ "hyper",
+ "tokio",
+ "tokio-native-tls",
+ "tracing",
+ "tracing-subscriber",
+ "wasmparser 0.211.1",
+ "wasmtime",
+ "wasmtime-wasi",
+ "wasmtime-wasi-http",
+ "wit-component",
+ "wit-parser 0.211.1",
 ]
 
 [[package]]
@@ -2710,62 +2766,6 @@ name = "log"
 version = "0.4.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a7a70ba024b9dc04c27ea2f0c0548feb474ec5c54bba33a7f72f873a39d07b24"
-
-[[package]]
-name = "logcraft-common"
-version = "0.1.3"
-dependencies = [
- "anyhow",
- "async-trait",
- "console",
- "dashmap 6.0.1",
- "dialoguer",
- "futures",
- "inquire",
- "kclvm-api",
- "kclvm-query",
- "kclvm-sema",
- "logcraft-runtime",
- "rayon",
- "regex",
- "reqwest",
- "serde",
- "serde_json",
- "serde_with",
- "serde_yaml_ng",
- "similar",
- "tempfile",
- "tokio",
- "tokio-util 0.7.11",
- "tracing",
- "tracing-subscriber",
- "url",
- "uuid",
- "wasmtime",
-]
-
-[[package]]
-name = "logcraft-runtime"
-version = "0.1.3"
-dependencies = [
- "anyhow",
- "async-trait",
- "crossbeam-channel",
- "futures",
- "http",
- "http-body-util",
- "hyper",
- "tokio",
- "tokio-native-tls",
- "tracing",
- "tracing-subscriber",
- "wasmparser 0.211.1",
- "wasmtime",
- "wasmtime-wasi",
- "wasmtime-wasi-http",
- "wit-component",
- "wit-parser 0.211.1",
-]
 
 [[package]]
 name = "lsp-server"

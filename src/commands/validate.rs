@@ -6,7 +6,7 @@ use clap::Parser;
 use kclvm_api::{gpyrpc::ValidateCodeArgs, service::KclvmServiceImpl};
 use tokio::task::JoinSet;
 
-use logcraft_common::{
+use lgc_common::{
     configuration::ProjectConfiguration,
     detections::map_plugin_detections,
     plugins::manager::{PluginActions, PluginManager},

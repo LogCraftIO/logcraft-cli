@@ -5,7 +5,7 @@ use anyhow::{anyhow, Result};
 use clap::Parser;
 use console::style;
 use dialoguer::{theme::ColorfulTheme, Select};
-use logcraft_common::{
+use lgc_common::{
     configuration::{Environment, ProjectConfiguration, Service},
     detections::{
         compare_detections, map_plugin_detections, DetectionState, PluginDetections,

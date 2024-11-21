@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MPL-2.0
 
 [package]
-name = "logcraft-common"
+name = "lgc-common"
 description = "LogCraft common utilities"
 version.workspace = true
 authors.workspace = true
@@ -44,4 +44,4 @@ regex = "1.10"
 serde_with = "3.8"
 
 # Local dependencies
-logcraft-runtime = { path = "../runtime" }
+lgc-runtime = { path = "../runtime" }
