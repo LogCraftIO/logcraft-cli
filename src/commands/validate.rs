@@ -19,7 +19,7 @@ pub struct ValidateCommand;
 impl ValidateCommand {
     pub async fn run(self, config: &ProjectConfiguration) -> Result<()> {
         // Load all detections
-        let detections = map_plugin_detections()?;
+        let detections = map_plugin_detections(None)?;
 
         // Load plugins
         let plugin_manager = PluginManager::new()?;

@@ -51,26 +51,36 @@ impl State {
         }
     }
 
-    pub fn missing_rules(&self, detections: &ServiceDetections, silent: bool) -> ServiceDetections {
+    pub fn missing_rules(
+        &self,
+        detections: &ServiceDetections,
+        silent: bool,
+        detection_name: Option<String>,
+    ) -> ServiceDetections {
         let to_remove: DashMap<String, HashSet<DetectionState>> = DashMap::new();
 
         detections.par_iter().for_each(|(service_id, rules)| {
             if let Some(state_rules) = self.services.get(service_id) {
-                state_rules.difference(rules).for_each(|rule| {
-                    to_remove
-                        .entry(service_id.clone())
-                        .and_modify(|s| {
-                            s.insert(rule.clone());
-                        })
-                        .or_insert(HashSet::from([rule.clone()]));
-                    if !silent {
-                        println!(
-                            "[-] rule: `{}` will be deleted from `{}`",
-                            style(&rule.name).red(),
-                            &service_id
-                        );
-                    }
-                });
+                state_rules
+                    .difference(rules)
+                    .filter(|rule| {
+                        detection_name.is_none() || detection_name.as_ref().unwrap() == &rule.name
+                    })
+                    .for_each(|rule| {
+                        to_remove
+                            .entry(service_id.clone())
+                            .and_modify(|s| {
+                                s.insert(rule.clone());
+                            })
+                            .or_insert(HashSet::from([rule.clone()]));
+                        if !silent {
+                            println!(
+                                "[-] rule: `{}` will be deleted from `{}`",
+                                style(&rule.name).red(),
+                                &service_id
+                            );
+                        }
+                    });
             }
         });
 

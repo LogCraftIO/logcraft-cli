@@ -30,12 +30,16 @@ pub struct DiffCommand {
     /// Show differences from this target service
     #[clap(short, long)]
     pub service_id: Option<String>,
+
+    /// Show differences for this detection path
+    #[clap(short, long)]
+    pub detection_id: Option<String>,
 }
 
 impl DiffCommand {
     pub async fn run(self, config: &ProjectConfiguration) -> Result<()> {
         // Load all detections
-        let detections: PluginDetections = map_plugin_detections()?;
+        let detections: PluginDetections = map_plugin_detections(self.detection_id.clone())?;
 
         // Prompt theme
         let prompt_theme = ColorfulTheme::default();
@@ -151,7 +155,7 @@ impl DiffCommand {
             .state
             .load()
             .await?
-            .missing_rules(&returned_rules, false)
+            .missing_rules(&returned_rules, false, self.detection_id)
             .is_empty()
             && changes
             && !has_diff
