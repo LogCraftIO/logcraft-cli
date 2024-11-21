@@ -106,7 +106,7 @@ impl EngineBuilder {
 
         // Add wasi and wasi_http to linker
         wasmtime_wasi::add_to_linker_async(&mut linker)?;
-        wasmtime_wasi_http::proxy::add_only_http_to_linker(&mut linker)?;
+        wasmtime_wasi_http::add_only_http_to_linker_async(&mut linker)?;
 
         Ok(Self {
             engine,

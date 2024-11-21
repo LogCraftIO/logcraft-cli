@@ -30,9 +30,9 @@ wasmtime-wasi-http.workspace = true
 crossbeam-channel = "0.5"
 async-trait = "0.1"
 
-wit-component = "0.211"
-wit-parser = "0.211"
-wasmparser = "0.211"
+wit-component = "0.220"
+wit-parser = "0.220"
+wasmparser = "0.220"
 
 # Temp
 hyper = { version = "1.0.1", features = ["full"] }

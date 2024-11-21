@@ -13,7 +13,7 @@ edition = "2021"
 license = "MPL-2.0"
 homepage = "https://www.logcraft.io"
 repository = "https://github.com/LogCraftIO/logcraft-cli"
-rust-version = "1.78"
+rust-version = "1.82"
 readme = "README.md"
 description = """
 Easily build Detection-as-Code pipelines for modern security tools (SIEM, EDR, XDR, ...)
@@ -31,6 +31,12 @@ lto = true
 codegen-units = 1
 strip = "debuginfo"
 
+[profile.dev]
+incremental = true
+opt-level = 0
+debug = 0
+strip = "debuginfo"
+
 # The profile that 'cargo dist' will build with
 [profile.dist]
 inherits = "release"
@@ -39,6 +45,7 @@ inherits = "release"
 anyhow.workspace = true
 futures.workspace = true
 serde.workspace = true
+serde_json.workspace = true
 serde_yaml_ng.workspace = true
 url.workspace = true
 wasmtime.workspace = true
@@ -53,7 +60,6 @@ console.workspace = true
 dialoguer.workspace = true
 
 indicatif = "0.17"
-serde_json = "1.0"
 clap = { version = "4.5", features = ["derive", "env", "cargo"] }
 figment = { version = "0.10", features = ["yaml", "env"] }
 envsubst = "0.2"
@@ -83,18 +89,18 @@ inquire = "0.7"
 console = "0.15"
 dialoguer = "0.11"
 rayon = "1.10.0"
-dashmap = "6.0"
+dashmap = "6.1"
 tracing = {version = "0.1", features = ["log"] }
 tracing-subscriber = {version = "0.3", features = ["env-filter", "fmt", "std"] }
 
-kclvm-api = { git = "https://github.com/kcl-lang/kcl", version = "0.9.0" }
-kclvm-query = { git = "https://github.com/kcl-lang/kcl", version = "0.9.0" }
-kclvm-sema = { git = "https://github.com/kcl-lang/kcl", version = "0.9.0" }
+kclvm-api = { git = "https://github.com/kcl-lang/kcl", tag = "v0.10.8" }
+kclvm-query = { git = "https://github.com/kcl-lang/kcl", tag = "v0.10.8" }
+kclvm-sema = { git = "https://github.com/kcl-lang/kcl", tag = "v0.10.8" }
 
 # Wasm related
-wasmtime = "22.0"
-wasmtime-wasi = "22.0"
-wasmtime-wasi-http = "22.0"
+wasmtime = "27.0"
+wasmtime-wasi = "27.0"
+wasmtime-wasi-http = "27.0"
 
 # Config for 'cargo dist'
 [workspace.metadata.dist]

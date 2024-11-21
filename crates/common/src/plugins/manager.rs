@@ -84,7 +84,7 @@ impl PluginManager {
             (deadline.as_micros() / DEFAULT_EPOCH_TICK_INTERVAL.as_micros()) as u64,
         );
 
-        let (interface, _) =
+        let interface =
             Plugins::instantiate_async(&mut store, &component, &self.engine.linker).await?;
 
         let metadata = interface
