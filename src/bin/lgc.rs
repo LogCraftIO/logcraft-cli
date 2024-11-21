@@ -15,8 +15,8 @@ use lgc::commands::{
     environments::EnvironmentsCommands, init::InitCommand, plugins::PluginsCommands,
     services::ServicesCommands, validate::ValidateCommand,
 };
-use logcraft_common::configuration::{ProjectConfiguration, LGC_CONFIG_PATH};
-use logcraft_common::utils::env_forbidden_chars;
+use lgc_common::configuration::{ProjectConfiguration, LGC_CONFIG_PATH};
+use lgc_common::utils::env_forbidden_chars;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::{env, fs};

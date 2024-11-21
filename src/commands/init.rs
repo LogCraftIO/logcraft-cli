@@ -3,7 +3,7 @@
 
 use anyhow::{bail, Result};
 use clap::Parser;
-use logcraft_common::configuration::{ProjectConfiguration, LGC_CONFIG_PATH, LGC_RULES_DIR};
+use lgc_common::configuration::{ProjectConfiguration, LGC_CONFIG_PATH, LGC_RULES_DIR};
 use std::{
     env::current_dir,
     fmt::Debug,

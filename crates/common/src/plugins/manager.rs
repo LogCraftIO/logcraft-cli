@@ -3,7 +3,7 @@
 
 use anyhow::{anyhow, bail, Result};
 use async_trait::async_trait;
-use logcraft_runtime::{
+use lgc_runtime::{
     plugin_component::plugin::Metadata, state::State, Config, Engine, Plugins,
     DEFAULT_EPOCH_TICK_INTERVAL,
 };

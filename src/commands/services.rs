@@ -6,7 +6,7 @@ use clap::{Parser, Subcommand};
 use console::style;
 use dialoguer::{theme::ColorfulTheme, Confirm, Input, Select};
 use indicatif::{ProgressBar, ProgressStyle};
-use logcraft_common::{
+use lgc_common::{
     configuration::{ProjectConfiguration, Service},
     plugins::manager::{PluginActions, PluginManager},
     utils,

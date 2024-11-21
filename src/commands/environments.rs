@@ -5,7 +5,7 @@ use anyhow::{anyhow, bail, Ok, Result};
 use clap::{Parser, Subcommand};
 use console::style;
 use dialoguer::{theme::ColorfulTheme, Input, Select};
-use logcraft_common::{
+use lgc_common::{
     configuration::{Environment, ProjectConfiguration},
     utils::ensure_kebab_case,
 };

@@ -5,7 +5,7 @@ use anyhow::{anyhow, bail, Result};
 use clap::{Parser, Subcommand};
 use console::style;
 use dialoguer::{theme::ColorfulTheme, Confirm, Input, Select};
-use logcraft_common::{
+use lgc_common::{
     configuration::ProjectConfiguration,
     plugins::{
         cleanup_plugin, determine_plugin_location,
@@ -166,7 +166,7 @@ impl UninstallPlugin {
         if !self.force
             && !services.is_empty()
             && !Confirm::with_theme(&prompt_theme)
-                .with_prompt(&format!(
+                .with_prompt(format!(
                     "This plugin is used in `{}` services(s), force removal ?",
                     style(services.join(", ")).red()
                 ))
