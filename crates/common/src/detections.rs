@@ -79,10 +79,21 @@ impl Detection {
     }
 }
 
-pub fn map_plugin_detections() -> Result<HashMap<String, HashSet<DetectionState>>> {
-    let entries: Vec<PathBuf> = fs::read_dir(LGC_RULES_DIR)?
-        .filter_map(|file| file.ok().map(|f| f.path()))
-        .collect();
+pub fn map_plugin_detections(
+    detection_id: Option<String>,
+) -> Result<HashMap<String, HashSet<DetectionState>>> {
+    let entries: Vec<PathBuf> = if let Some(detection_id) = detection_id {
+        let detection_path = PathBuf::from(format!("{}/{}.yaml", LGC_RULES_DIR, detection_id));
+        if detection_path.is_file() {
+            vec![detection_path]
+        } else {
+            bail!("detection `{}` does not exist", detection_id)
+        }
+    } else {
+        fs::read_dir(LGC_RULES_DIR)?
+            .filter_map(|file| file.ok().map(|f| f.path()))
+            .collect()
+    };
 
     let plugins: DashMap<String, HashSet<DetectionState>> = DashMap::new();
 

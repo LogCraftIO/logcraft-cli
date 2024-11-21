@@ -29,6 +29,10 @@ pub struct DeployCommand {
     #[clap(short, long)]
     pub service_id: Option<String>,
 
+    /// Show differences for this detection path
+    #[clap(short, long)]
+    pub detection_id: Option<String>,
+
     /// Skip interactive approval of changes deployment
     #[clap(long)]
     pub auto_approve: bool,
@@ -37,7 +41,7 @@ pub struct DeployCommand {
 impl DeployCommand {
     pub async fn run(self, config: &ProjectConfiguration) -> Result<()> {
         // Load all detections
-        let detections = map_plugin_detections()?;
+        let detections = map_plugin_detections(self.detection_id.clone())?;
 
         // Prompt theme
         let prompt_theme = ColorfulTheme::default();
@@ -149,7 +153,11 @@ impl DeployCommand {
                 }
 
                 let mut state = config.state.load().await?;
-                let to_remove = state.missing_rules(&returned_rules, self.auto_approve);
+                let to_remove = state.missing_rules(
+                    &returned_rules,
+                    self.auto_approve,
+                    self.detection_id.clone(),
+                );
                 let changed =
                     compare_detections(&detections, &returned_rules, &services, !self.auto_approve);
 
