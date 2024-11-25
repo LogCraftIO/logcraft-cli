@@ -35,8 +35,8 @@ pub fn cleanup_plugin(name: &str) -> Result<()> {
 pub fn determine_plugin_location(source: &str) -> Result<PluginLocation> {
     match Url::parse(source) {
         Ok(uri) => match uri.scheme() {
-            "http" | "https" => bail!("not implemented yet"),
-            "oci" => bail!("not implemented yet"),
+            "http" | "https" => unimplemented!("not implemented yet"),
+            "oci" => unimplemented!("not implemented yet"),
             _ => bail!("unsupported scheme: {}", uri.scheme()),
         },
         Err(_) => {

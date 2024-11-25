@@ -60,7 +60,7 @@ console.workspace = true
 dialoguer.workspace = true
 
 indicatif = "0.17"
-clap = { version = "4.5", features = ["derive", "env", "cargo"] }
+clap = { version = "4.5", features = ["derive", "env"] }
 figment = { version = "0.10", features = ["yaml", "env"] }
 envsubst = "0.2"
 
