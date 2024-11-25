@@ -2,28 +2,23 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #![forbid(unsafe_code)]
+#![deny(unreachable_pub)]
 
 use anyhow::Result;
-use clap::builder::styling;
-use clap::{crate_version, Subcommand};
-use clap::{CommandFactory, FromArgMatches, Parser};
-use console::{set_colors_enabled, set_colors_enabled_stderr};
 use figment::providers::{Env, Format, Yaml};
-use figment::Figment;
-use lgc::commands::{
-    deploy::DeployCommand, destroy::DestroyCommand, diff::DiffCommand,
-    environments::EnvironmentsCommands, init::InitCommand, plugins::PluginsCommands,
-    services::ServicesCommands, validate::ValidateCommand,
+use clap::{
+    builder::styling,
+    CommandFactory, FromArgMatches, Parser, Subcommand
 };
-use lgc_common::configuration::{ProjectConfiguration, LGC_CONFIG_PATH};
-use lgc_common::utils::env_forbidden_chars;
-use std::collections::HashMap;
-use std::path::PathBuf;
 use std::{env, fs};
-use tracing::Level;
-use tracing_subscriber::EnvFilter;
 
-#[forbid(unsafe_code)]
+// Local dependencies
+use lgc::commands;
+use lgc_common::{
+    configuration::{ProjectConfiguration, LGC_CONFIG_PATH},
+    utils::env_forbidden_chars
+};
+
 #[tokio::main]
 async fn main() {
     if let Err(err) = LogCraftCli::init().await {
@@ -42,7 +37,7 @@ const HELP_TEMPLATE: &str = r#"
 
 /// LogCraft CLI
 #[derive(Parser)]
-#[clap(name="LogCraft", help_template=HELP_TEMPLATE, version=crate_version!())]
+#[clap(name="LogCraft", help_template=HELP_TEMPLATE, version=env!("CARGO_PKG_VERSION"))]
 struct LogCraftCli {
     #[clap(subcommand)]
     commands: LogCraftCommands,
@@ -53,19 +48,18 @@ struct LogCraftCli {
 
 /// LogCraft CLI
 #[derive(Subcommand)]
-// #[clap(name="LogCraft", help_template=HELP_TEMPLATE, version=crate_version!())]
 enum LogCraftCommands {
-    Deploy(DeployCommand),
-    Destroy(DestroyCommand),
-    Diff(DiffCommand),
+    Deploy(commands::DeployCommand),
+    Destroy(commands::DestroyCommand),
+    Diff(commands::DiffCommand),
     #[clap(subcommand, name = "envs")]
-    Environments(EnvironmentsCommands),
-    Init(InitCommand),
+    Environments(commands::EnvironmentsCommands),
+    Init(commands::InitCommand),
     #[clap(subcommand)]
-    Plugins(PluginsCommands),
+    Plugins(commands::PluginsCommands),
     #[clap(subcommand)]
-    Services(ServicesCommands),
-    Validate(ValidateCommand),
+    Services(commands::ServicesCommands),
+    Validate(commands::ValidateCommand),
 }
 
 impl LogCraftCli {
@@ -79,8 +73,8 @@ impl LogCraftCli {
 
         // Forces tty colors
         if env::var("LGC_FORCE_COLORS").is_ok_and(|t| &t == "true") {
-            set_colors_enabled(true);
-            set_colors_enabled_stderr(true);
+            console::set_colors_enabled(true);
+            console::set_colors_enabled_stderr(true);
         }
 
         let matches = LogCraftCli::command().styles(styles).get_matches();
@@ -90,15 +84,15 @@ impl LogCraftCli {
             .with_writer(std::io::stdout)
             .with_target(false)
             .without_time()
-            .with_env_filter(EnvFilter::from_env("LGC_LOG"))
-            .with_max_level(Level::INFO)
+            .with_env_filter(tracing_subscriber::EnvFilter::from_env("LGC_LOG"))
+            .with_max_level(tracing::Level::INFO)
             .init();
 
         // Load configuration
         match cli.commands {
             LogCraftCommands::Init(cmd) => return cmd.run(),
             _ => {
-                let configuration_path = PathBuf::from(LGC_CONFIG_PATH);
+                let configuration_path = std::path::PathBuf::from(LGC_CONFIG_PATH);
 
                 if configuration_path.is_file() {
                     let mut configuration_file = fs::read_to_string(configuration_path)?;
@@ -115,11 +109,11 @@ impl LogCraftCli {
                                         None
                                     }
                                 })
-                                .collect::<HashMap<String, String>>(),
+                                .collect::<std::collections::HashMap<String, String>>(),
                         )?;
                     }
 
-                    cli.config = match Figment::new()
+                    cli.config = match figment::Figment::new()
                         .merge(Yaml::string(&configuration_file))
                         .merge(Env::prefixed("LGC_").split("_"))
                         .extract()
@@ -141,7 +135,7 @@ impl LogCraftCli {
     }
 
     /// LogCraft CLI entrypoint.
-    pub async fn run(mut self) -> Result<()> {
+    async fn run(mut self) -> Result<()> {
         match self.commands {
             // General commands
             LogCraftCommands::Init(cmd) => cmd.run(),

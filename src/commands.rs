@@ -2,12 +2,26 @@
 // SPDX-License-Identifier: MPL-2.0
 
 // Commands
-pub mod deploy;
-pub mod destroy;
-pub mod diff;
-pub mod init;
-pub mod validate;
+mod deploy;
+mod destroy;
+mod diff;
+mod init;
+mod validate;
 // Subcommands
-pub mod environments;
+mod environments;
 pub mod plugins;
 pub mod services;
+
+// Re-exporting the commands
+pub use {
+    // Commands
+    deploy::DeployCommand,
+    destroy::DestroyCommand,
+    diff::DiffCommand,
+    init::InitCommand,
+    validate::ValidateCommand,
+    // Subcommands
+    environments::EnvironmentsCommands,
+    plugins::PluginsCommands,
+    services::ServicesCommands,
+};
