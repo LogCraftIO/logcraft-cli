@@ -1,0 +1,12 @@
+language: 'rust'
+type: 'library'
+
+project:
+  name: 'sample'
+  description: 'LogCraft CLI demonstration plugin'
+
+dependsOn:
+  - 'bindings'
+
+tags:
+  - 'plugin'

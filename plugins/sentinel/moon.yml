@@ -1,0 +1,12 @@
+language: 'rust'
+type: 'library'
+
+project:
+  name: 'sentinel'
+  description: 'LogCraft CLI Sentinel plugin'
+
+dependsOn:
+  - 'bindings'
+
+tags:
+  - 'plugin'

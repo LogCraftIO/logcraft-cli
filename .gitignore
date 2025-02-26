@@ -1,6 +1,28 @@
+# rust
 target/
-rules/
-lgc.yaml
-.logcraft/
-# Ignore Wasm components bindings (generated at compile time)
-/plugins/**/src/bindings.rs
+debug/
+**/*.rs.bk
+
+# moon
+.moon/cache
+.moon/docker
+
+# Editor
+*.swp
+*.swo
+.idea
+.vscode
+
+# Vue/JS
+node_modules/
+dist/
+cache/
+
+# MISC
+.DS_Store
+
+# Custom releases
+releases/
+
+# Dev folder for testing purposes
+dev/

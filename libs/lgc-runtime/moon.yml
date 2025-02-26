@@ -1,0 +1,9 @@
+language: 'rust'
+type: 'library'
+
+project:
+  name: 'lgc-runtime'
+  description: 'LogCraft CLI runtime library'
+
+dependsOn:
+  - 'bindings'

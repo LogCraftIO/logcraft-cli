@@ -1,39 +1,48 @@
 # -----
-FROM docker.io/library/rust:1.78-alpine AS builder
+# Stage 1: Builder
+FROM docker.io/library/rust:1.84-alpine AS builder
 
-# Set `SYSROOT` to a dummy path (default is /usr) because pkg-config-rs *always*
-# links those located in that path dynamically but we want static linking, c.f.
-# https://github.com/rust-lang/pkg-config-rs/blob/54325785816695df031cef3b26b6a9a203bbc01b/src/lib.rs#L613
+# Set dummy SYSROOT to force static linking
 ENV SYSROOT=/dummy
 
-# Install dependencies
-RUN apk update && apk add --no-cache \
-    musl-dev \
-    libressl-dev \
-    protobuf-dev
+# Install build dependencies
+RUN apk add --no-cache musl-dev libressl-dev
 
-ENV PROTOC=/usr/bin/protoc
-
+# Set working directory
 WORKDIR /build
-COPY . /build
 
-RUN cargo build --bin lgc --release
+# Copy source code and build artifacts
+COPY . .
+# Build the CLI
+RUN cargo build --release -p lgc
+# Build the plugins
+RUN rustup target add wasm32-wasip2
+RUN cargo build --release --target wasm32-wasip2 \
+    -p splunk \
+    -p sentinel
 
 # -----
+# Stage 2: Final image
 FROM cgr.dev/chainguard/wolfi-base:latest
 
-LABEL org.opencontainers.image.title="LogCraft CLI"
-LABEL org.opencontainers.image.authors="LogCraft <dev@logcraft.io>"
-LABEL org.opencontainers.image.url="https://github.com/LogCraftIO/logcraft-cli/pkgs/container/logcraft-cli"
-LABEL org.opencontainers.image.documentation="https://docs.logcraft.io/"
-LABEL org.opencontainers.image.source="https://github.com/LogCraftIO/logcraft-cli"
-LABEL org.opencontainers.image.vendor="LogCraft"
-LABEL org.opencontainers.image.licenses="MPL-2.0"
-LABEL org.opencontainers.image.description="Easily build Detection-as-Code pipelines for modern security tools (SIEM, EDR, XDR, ...)"
+# Define a variable for the installation directory
+ENV LOGCRAFT_DIR=/opt/logcraft-cli
+ENV PATH="${LOGCRAFT_DIR}:$PATH"
 
+# Metadata
+LABEL org.opencontainers.image.title="LogCraft CLI" \
+      org.opencontainers.image.authors="LogCraft <dev@logcraft.io>" \
+      org.opencontainers.image.url="https://github.com/LogCraftIO/logcraft-cli/pkgs/container/logcraft-cli" \
+      org.opencontainers.image.documentation="https://docs.logcraft.io/" \
+      org.opencontainers.image.source="https://github.com/LogCraftIO/logcraft-cli" \
+      org.opencontainers.image.vendor="LogCraft" \
+      org.opencontainers.image.licenses="MPL-2.0" \
+      org.opencontainers.image.description="Easily build Detection-as-Code pipelines for modern security tools (SIEM, EDR, XDR, ...)"
+
+# Set the working directory and change ownership
 WORKDIR /srv/workspace
-RUN chown -R nonroot.nonroot /srv/workspace
-USER nonroot
 
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-COPY --from=builder /build/target/release/lgc /usr/local/bin/lgc
+# Copy artifacts from the builder stage using the variable
+COPY --from=builder /build/target/release/lgc ${LOGCRAFT_DIR}/lgc
+COPY --from=builder /build/target/wasm32-wasip2/release/splunk.wasm ${LOGCRAFT_DIR}/plugins/splunk
+COPY --from=builder /build/target/wasm32-wasip2/release/sentinel.wasm ${LOGCRAFT_DIR}/plugins/sentinel

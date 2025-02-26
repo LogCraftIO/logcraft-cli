@@ -1,0 +1,25 @@
+language: 'typescript'
+type: 'application'
+
+project:
+  name: 'docs'
+  description: 'LogCraft User Documentation'
+
+tasks:
+  build:
+    command: 'pnpm build'
+    deps:
+      - '^:build'
+    inputs:
+      - 'src/**/*'
+      - 'package.json'
+    outputs:
+      - 'src/.vitepress/dist/**/*'
+  dev:
+    command: 'pnpm dev'
+  check:
+    # passthrough arguments:
+    # `lgc docs:check -- --minAlertLevel=suggestion`
+    command: 'vale --config ./vale/.vale.ini src'
+    inputs:
+      - 'src/**/*.md'

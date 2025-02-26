@@ -1,0 +1,30 @@
+// Copyright (c) 2023 LogCraft.io.
+// SPDX-License-Identifier: MPL-2.0
+
+interface plugin {
+  type bytes = list<u8>;
+
+  /// The metadata for a plugin used for registration and setup
+  record metadata {
+      /// The friendly name of the plugin
+      name: string,
+      /// The version of the plugin
+      version: string,
+  }
+
+  // Plugin actions
+  load: func() -> metadata;
+  settings: func() -> result<bytes, string>;
+  schema: func() -> result<bytes, string>;
+  validate: func(detection: bytes) -> result<_, string>;
+  
+  // Service actions
+  // CRUD definition
+  create: func(config: bytes, detection: bytes) -> result<_, string>;
+  read:   func(config: bytes, detection: bytes) -> result<option<bytes>, string>;
+  update: func(config: bytes, detection: bytes) -> result<_, string>;
+  delete: func(config: bytes, detection: bytes) -> result<_, string>;
+
+  // Miscellaneous
+  ping: func(config: bytes) -> result<bool, string>;
+}

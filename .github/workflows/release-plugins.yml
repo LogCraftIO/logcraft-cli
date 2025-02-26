@@ -1,0 +1,58 @@
+name: LogCraft Plugin Release
+
+permissions:
+  contents: "write"
+
+on:
+  push:
+    tags:
+      - 'plugin/**'
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.name.outputs.name }}
+    env:
+      TAG: ${{ github.ref_name }}
+    steps:
+      - name: Get plugin name
+        id: name
+        run: |
+          if [[ "${TAG}" =~ ^plugin/([^/]+)/([^/]+)$ ]]; then
+            echo "name=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+          else
+            echo "Error: Invalid tag format: ${TAG}" >&2
+            exit 1
+          fi
+  build:
+    runs-on: ubuntu-24.04
+    needs: plan
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: 'moonrepo/setup-toolchain@v0'
+        with:
+          auto-install: true
+
+      - run: "moon '#plugin:build'"
+      - run: "bash scripts/package-plugins.sh"
+
+      - name: Upload Plugins Tarball
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugins-tarball
+          path: |
+            releases/plugins.tar.gz
+            releases/plugins.tar.gz.sha256
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: |
+            releases/plugins.tar.gz
+            releases/plugins.tar.gz.sha256
+          name: ${{ github.ref_name }}

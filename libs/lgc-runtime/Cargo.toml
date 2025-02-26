@@ -1,0 +1,27 @@
+[package]
+name = "lgc-runtime"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+
+[dependencies]
+# Utils
+anyhow.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+# Async
+tokio.workspace = true
+crossbeam-channel = "0.5"
+
+# HTTP related
+http.workspace = true
+hyper = { version = "1.0.1", features = ["full"] }
+tokio-native-tls = "0.3.1"
+http-body-util = "0.1.1"
+
+# WASM Related
+wasmtime.workspace = true
+wasmtime-wasi.workspace = true
+wasmtime-wasi-http.workspace = true

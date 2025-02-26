@@ -1,0 +1,16 @@
+language: 'rust'
+type: 'application'
+
+project:
+  name: 'lgc'
+  description: 'LogCraft Command Line Interface (CLI)'
+
+dependsOn:
+  - 'lgc-common'
+  - 'lgc-runtime'
+
+tasks:
+  run:
+    command: 'cargo run'
+    deps:
+      - '#plugin:build'

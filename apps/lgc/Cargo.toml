@@ -1,0 +1,48 @@
+[package]
+name = "lgc"
+version = "1.0.1"
+repository.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "lgc"
+path = "src/lgc.rs"
+
+[target.x86_64-unknown-linux-gnu.dependencies]
+openssl = { version = "0.10", features = ["vendored"] }
+
+[dependencies]
+# Local dependencies
+lgc-common.workspace = true
+
+# Utils
+tracing.workspace = true
+tracing-subscriber.workspace = true
+console.workspace = true
+dialoguer.workspace = true
+clap = { version = "4.5", features = ["derive", "env", "cargo"] }
+envsubst = "0.2"
+
+# Async
+anyhow.workspace = true
+tokio.workspace = true
+
+# Ser / Deser
+serde.workspace = true
+serde_json.workspace = true
+serde_yaml_ng.workspace = true
+toml.workspace = true
+
+# Wasm related
+wasmtime.workspace = true
+wasmtime-wasi.workspace = true
+
+# Configuration related
+figment = { version = "0.10", features = ["toml", "env"] }
+jsonschema.workspace = true
+
+[dev-dependencies]
+assert_cmd = "2.0"
+assert_fs = "1.1"
+predicates = "3.1"
+rexpect = "0.6"

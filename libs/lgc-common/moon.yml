@@ -1,0 +1,6 @@
+language: 'rust'
+type: 'library'
+
+project:
+  name: 'lgc-common'
+  description: 'LogCraft CLI common library'

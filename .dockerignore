@@ -1,2 +1,19 @@
-target/
-plugins/
+# Version control
+.git
+.gitignore
+.github
+
+# Docker-related files
+Dockerfile
+.dockerignore
+
+# Documentation and miscellaneous files
+docs
+README.md
+licenserc.toml
+.prototools
+.moon
+scripts
+
+# Cargo build output (generated artifacts)
+target

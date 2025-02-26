@@ -1,0 +1,6 @@
+tasks:
+  build:
+    command: 'cargo build --release --target wasm32-wasip2'
+    inputs:
+      - 'src/**/*'
+      - 'Cargo.toml'
