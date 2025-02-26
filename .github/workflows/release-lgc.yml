@@ -48,6 +48,8 @@ jobs:
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
+          allowUpdates: true
+          makeLatest: true
           artifacts: |
             releases/lgc-${{ steps.toLowerCase.outputs.osLowercase }}-${{ steps.toLowerCase.outputs.archLowercase }}.tar.gz
             releases/lgc-${{ steps.toLowerCase.outputs.osLowercase }}-${{ steps.toLowerCase.outputs.archLowercase }}.tar.gz.sha256
