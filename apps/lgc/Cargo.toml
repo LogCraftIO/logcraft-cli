@@ -1,6 +1,6 @@
 [package]
 name = "lgc"
-version = "1.0.1"
+version = "1.0.0"
 repository.workspace = true
 edition.workspace = true
 
