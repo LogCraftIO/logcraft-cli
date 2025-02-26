@@ -1,0 +1,19 @@
+tasks:
+  build:
+    command: 'cargo build --release'
+    deps:
+      - '^:build'
+    inputs:
+      - 'src/**/*'
+      - 'Cargo.toml'
+  format:
+    command: 'cargo fmt --all -- --check'
+  test:
+    command: 'cargo test'
+  check:
+    command: 'cargo check'
+  run:
+     command: 'cargo run'
+     preset: 'server'
+  clean:
+    command: 'cargo clean'

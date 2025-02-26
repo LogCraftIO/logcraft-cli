@@ -1,0 +1,56 @@
+name: LogCraft CLI Release
+
+permissions:
+  contents: "write"
+
+on:
+  push:
+    tags:
+      - 'lgc/**'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: 'moonrepo/setup-toolchain@v0'
+        with:
+          auto-install: true
+
+      - run: "moon '#plugin:build'"
+      - run: "moon lgc:build"
+
+      - run: "bash scripts/package.sh"
+
+      - name: Renaming OS and ARCH to lowercase
+        id: toLowerCase
+        run: |
+          echo osLowercase=$(echo $RUNNER_OS  | tr '[:upper:]' '[:lower:]') >> $GITHUB_OUTPUT
+          echo archLowercase=$(echo $RUNNER_ARCH | tr '[:upper:]' '[:lower:]') >> $GITHUB_OUTPUT
+
+      - name: Upload CLI Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lgc
+          path: |
+            releases/lgc-${{ steps.toLowerCase.outputs.osLowercase }}-${{ steps.toLowerCase.outputs.archLowercase }}.tar.gz
+            releases/lgc-${{ steps.toLowerCase.outputs.osLowercase }}-${{ steps.toLowerCase.outputs.archLowercase }}.tar.gz.sha256
+            releases/lgc-minimal-${{ steps.toLowerCase.outputs.osLowercase }}-${{ steps.toLowerCase.outputs.archLowercase }}.tar.gz
+            releases/lgc-minimal-${{ steps.toLowerCase.outputs.osLowercase }}-${{ steps.toLowerCase.outputs.archLowercase }}.tar.gz.sha256
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: |
+            releases/lgc-${{ steps.toLowerCase.outputs.osLowercase }}-${{ steps.toLowerCase.outputs.archLowercase }}.tar.gz
+            releases/lgc-${{ steps.toLowerCase.outputs.osLowercase }}-${{ steps.toLowerCase.outputs.archLowercase }}.tar.gz.sha256
+            releases/lgc-minimal-${{ steps.toLowerCase.outputs.osLowercase }}-${{ steps.toLowerCase.outputs.archLowercase }}.tar.gz
+            releases/lgc-minimal-${{ steps.toLowerCase.outputs.osLowercase }}-${{ steps.toLowerCase.outputs.archLowercase }}.tar.gz.sha256
+          name: ${{ github.ref_name }}

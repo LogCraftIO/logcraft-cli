@@ -1,0 +1,12 @@
+language: 'rust'
+type: 'library'
+
+project:
+  name: 'splunk'
+  description: 'LogCraft CLI Splunk plugin'
+
+dependsOn:
+  - 'bindings'
+
+tags:
+  - 'plugin'

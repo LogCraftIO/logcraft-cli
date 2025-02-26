@@ -1,0 +1,14 @@
+{
+	"type": "module",
+	"devDependencies": {
+		"vitepress": "^1.6.3"
+	},
+	"scripts": {
+		"dev": "vitepress dev src",
+		"build": "vitepress build src",
+		"preview": "vitepress preview src"
+	},
+	"dependencies": {
+		"vuetify": "^3.7.14"
+	}
+}

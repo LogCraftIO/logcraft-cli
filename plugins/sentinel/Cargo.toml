@@ -1,0 +1,31 @@
+[package]
+name = "sentinel"
+description = "LogCraft CLI Sentinel plugin"
+version = "0.2.0"
+edition.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+# Utils
+serde.workspace = true
+serde_json.workspace = true
+serde_with_macros.workspace = true
+serde_path_to_error.workspace = true
+once_cell.workspace = true
+uuid = { version = "1.14", features = ["v4", "serde"] }
+
+# Schema related
+schemars = { workspace = true, features = ["uuid1"] }
+jsonschema.workspace = true
+
+# WASM Related
+wit-bindgen.workspace = true
+
+# HTTP
+waki = { workspace = true, features = ["json"] }
+url.workspace = true
+http.workspace = true

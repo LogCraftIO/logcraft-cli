@@ -1,0 +1,39 @@
+# LogCraft
+LogCraft
+lgc
+
+# Security Vendors
+CrowdStrike
+LimaCharlie
+Microsoft
+Palo
+Sekoia
+Splunk
+Tanium
+
+# Version Control Systems
+Bitbucket
+GitHub
+GitLab
+
+# MISC
+[tT]ada
+
+# Tech terms
+bool
+boolean
+dev
+enum
+https?
+(?i)jwt
+(?i)local
+[mM]onorepo
+moonrepo
+prod
+string
+Yara
+(?i)wasm
+Wolfi
+
+# Splunk
+savedsearches

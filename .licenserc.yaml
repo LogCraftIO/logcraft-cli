@@ -1,0 +1,34 @@
+# Copyright (c) 2023 LogCraft.io.
+# SPDX-License-Identifier: MPL-2.0
+
+header:
+  license:
+    content: |
+      Copyright (c) 2023 LogCraft.io.
+      SPDX-License-Identifier: MPL-2.0
+
+  paths-ignore:
+    # Moon 
+    - ".moon/**"
+    # Documentation 
+    - "docs/**"
+    # Scripts 
+    - "scripts/**"
+    # Unneeded
+    - "Dockerfile"
+    # Generated files
+    - ".github/**"
+    # Unmanaged
+    - "**/Cargo.*"
+    - ".prototools"
+    - ".dockerignore"
+    - ".gitignore"
+    - "LICENSE"
+    - "**/moon.yml"
+    - "**/README.md"
+
+  comment: on-failure
+
+dependency:
+  files:
+    - Cargo.toml
