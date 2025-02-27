@@ -95,7 +95,7 @@ impl ValidateCommand {
         }
 
         if !self.quiet && !has_error {
-            tracing::info!("all good, no problems identified.");
+            tracing::info!("all good, no problem identified.");
         }
 
         Ok(())

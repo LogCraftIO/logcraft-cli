@@ -48,7 +48,7 @@ fn service_create_no_configuration() -> Result<()> {
     env.setup_plugin()?;
 
     common::assert_file_exists(
-        &temp_dir.join(".logcraft/plugins/sample"),
+        &temp_dir.join(".logcraft/plugins/sample.wasm"),
         true,
         "Plugin 'sample' not found in testing project",
     );
@@ -87,7 +87,7 @@ fn service_create_with_configuration() -> Result<()> {
     // Add the sample plugin to the project
     env.setup_plugin()?;
     common::assert_file_exists(
-        &temp_dir.join(".logcraft/plugins/sample"),
+        &temp_dir.join(".logcraft/plugins/sample.wasm"),
         true,
         "Plugin 'sample' not found in testing project",
     );
@@ -165,7 +165,7 @@ fn service_create_invalid_values() -> Result<()> {
     command.current_dir(&temp_dir);
 
     let mut session = spawn_command(command, Some(5_000))?;
-    session.exp_string("invalid format 'invalid identifier!', must be kebab-case")?;
+    session.exp_string("invalid format `invalid identifier!`, must be kebab-case")?;
     session.exp_eof()?;
 
     // Test invalid environment
@@ -183,7 +183,7 @@ fn service_create_invalid_values() -> Result<()> {
     command.current_dir(&temp_dir);
 
     let mut session = spawn_command(command, Some(5_000))?;
-    session.exp_string("invalid format 'invalid environment!', must be kebab-case")?;
+    session.exp_string("invalid format `invalid environment!`, must be kebab-case")?;
     session.exp_eof()?;
 
     // Test invalid plugin
@@ -218,7 +218,7 @@ fn service_list() -> Result<()> {
     // Add the sample plugin to the project
     env.setup_plugin()?;
     common::assert_file_exists(
-        &temp_dir.join(".logcraft/plugins/sample"),
+        &temp_dir.join(".logcraft/plugins/sample.wasm"),
         true,
         "Plugin 'sample' not found in testing project",
     );
@@ -267,7 +267,7 @@ fn service_remove() -> Result<()> {
     // Add the sample plugin to the project
     env.setup_plugin()?;
     common::assert_file_exists(
-        &temp_dir.join(".logcraft/plugins/sample"),
+        &temp_dir.join(".logcraft/plugins/sample.wasm"),
         true,
         "Plugin 'sample' not found in testing project",
     );
@@ -315,7 +315,7 @@ fn service_remove_non_existent() -> Result<()> {
     // Add the sample plugin to the project
     env.setup_plugin()?;
     common::assert_file_exists(
-        &temp_dir.join(".logcraft/plugins/sample"),
+        &temp_dir.join(".logcraft/plugins/sample.wasm"),
         true,
         "Plugin 'sample' not found in testing project",
     );
@@ -363,7 +363,7 @@ fn service_configure_non_existent() -> Result<()> {
     // Add the sample plugin to the project
     env.setup_plugin()?;
     common::assert_file_exists(
-        &temp_dir.join(".logcraft/plugins/sample"),
+        &temp_dir.join(".logcraft/plugins/sample.wasm"),
         true,
         "Plugin 'sample' not found in testing project",
     );
@@ -411,7 +411,7 @@ fn service_configure() -> Result<()> {
     // Add the sample plugin to the project
     env.setup_plugin()?;
     common::assert_file_exists(
-        &temp_dir.join(".logcraft/plugins/sample"),
+        &temp_dir.join(".logcraft/plugins/sample.wasm"),
         true,
         "Plugin 'sample' not found in testing project",
     );

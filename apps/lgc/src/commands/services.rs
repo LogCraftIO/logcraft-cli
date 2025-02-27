@@ -254,8 +254,15 @@ impl ConfigureService {
             .get_mut(&identifier)
             .ok_or_else(|| anyhow::anyhow!("service '{}' not found", &identifier))?;
 
+        // Get plugins directory
+        let plugins_dir =
+            path::PathBuf::from(config.core.base_dir.as_deref().unwrap_or(LGC_BASE_DIR))
+                .join("plugins");
+
         // Load plugin
-        let (instance, mut store) = PluginManager::new()?.load_plugin(&service.plugin).await?;
+        let (instance, mut store) = PluginManager::new()?
+            .load_plugin(plugins_dir.join(&service.plugin).with_extension("wasm"))
+            .await?;
 
         // Start plugin's service configuration
         service.configure(&instance.settings(&mut store).await?, false)?;
