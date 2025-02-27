@@ -135,12 +135,7 @@ impl DestroyCommand {
                             }
                             Ok(None) => {}
                             Err(e) => {
-                                anyhow::bail!(
-                                    "retrieving {} for {}: {}",
-                                    path,
-                                    service_name,
-                                    e
-                                )
+                                anyhow::bail!("retrieving {} for {}: {}", path, service_name, e)
                             }
                         }
                     }

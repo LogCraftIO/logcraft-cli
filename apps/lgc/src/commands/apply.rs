@@ -232,12 +232,7 @@ impl ApplyCommand {
                 if let Some(to_create) = to_create.get(svc_name) {
                     for (path, desired) in to_create {
                         if let Err(e) = instance.create(&mut store, settings, desired).await {
-                            tracing::warn!(
-                                "failed to create {} on {}: {}",
-                                path,
-                                svc_name,
-                                e
-                            );
+                            tracing::warn!("failed to create {} on {}: {}", path, svc_name, e);
                         } else {
                             println!(
                                 "{} created on {}",
@@ -257,12 +252,7 @@ impl ApplyCommand {
                 if let Some(to_update) = to_update.get(svc_name) {
                     for (path, desired) in to_update {
                         if let Err(e) = instance.update(&mut store, settings, desired).await {
-                            tracing::warn!(
-                                "failed to update {} on {}: {}",
-                                path,
-                                svc_name,
-                                e
-                            );
+                            tracing::warn!("failed to update {} on {}: {}", path, svc_name, e);
                         } else {
                             println!(
                                 "{} updated on {}",

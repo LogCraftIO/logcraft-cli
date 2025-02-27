@@ -30,9 +30,7 @@ fn service_command_no_project() -> Result<()> {
     command.current_dir(&temp_dir);
 
     let mut session = spawn_command(command, None)?;
-    session.exp_string(
-        "no configuration file, run 'lgc init' to initialize a new project",
-    )?;
+    session.exp_string("no configuration file, run 'lgc init' to initialize a new project")?;
     session.exp_eof()?;
 
     Ok(())
