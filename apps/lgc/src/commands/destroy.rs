@@ -110,7 +110,7 @@ impl DestroyCommand {
         let mut join_set = JoinSet::new();
         for (plugin, plugin_context) in detections {
             // Check if the plugin exists.
-            let plugin_path = plugins_dir.join(&plugin);
+            let plugin_path = plugins_dir.join(&plugin).with_extension("wasm");
             if !plugin_path.exists() {
                 tracing::warn!(
                     "folder `{}/{}` has no plugin associated.",
@@ -191,7 +191,7 @@ impl DestroyCommand {
         // Apply changes.
         let plugin_manager = PluginManager::new()?;
         for (plugin, services) in to_remove {
-            let plugin_path = plugins_dir.join(&plugin);
+            let plugin_path = plugins_dir.join(&plugin).with_extension("wasm");
             let (instance, mut store) = plugin_manager.load_plugin(plugin_path).await?;
             for (service_name, rules) in services {
                 for (path, settings, content) in rules {

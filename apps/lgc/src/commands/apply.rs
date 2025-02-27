@@ -43,7 +43,7 @@ impl ApplyCommand {
                 .join("plugins");
 
         sync::Arc::make_mut(&mut context).retain(|name, _| {
-            let exists = plugins_dir.join(name).exists();
+            let exists = plugins_dir.join(name).with_extension("wasm").exists();
             if !exists {
                 tracing::warn!(
                     "folder `{}/{}` has no plugin associated.",
@@ -65,7 +65,7 @@ impl ApplyCommand {
         let plugin_manager = PluginManager::new()?;
         let mut join_set = JoinSet::new();
         for (plugin, context) in context.iter() {
-            let plugin_path = plugins_dir.join(plugin);
+            let plugin_path = plugins_dir.join(plugin).with_extension("wasm");
             let plugin_manager = plugin_manager.clone();
 
             // Cheap clone of context
@@ -220,7 +220,7 @@ impl ApplyCommand {
         // Apply changes
         let plugin_manager = PluginManager::new()?;
         for (plugin, context) in context.iter() {
-            let plugin_path = plugins_dir.join(plugin);
+            let plugin_path = plugins_dir.join(plugin).with_extension("wasm");
             let (instance, mut store) = plugin_manager.load_plugin(plugin_path).await?;
 
             // Cheap clone of context

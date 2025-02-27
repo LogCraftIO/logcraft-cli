@@ -51,7 +51,7 @@ impl PlanCommand {
                 .join("plugins");
 
         sync::Arc::make_mut(&mut context).retain(|name, _| {
-            let exists = plugins_dir.join(name).exists();
+            let exists = plugins_dir.join(name).with_extension("wasm").exists();
             if !exists {
                 tracing::warn!(
                     "folder `{}/{}` has no plugin associated.",
@@ -76,7 +76,7 @@ impl PlanCommand {
 
             // Spawn a task per plugin that will retrieve the detections for all related services.
             for (plugin, context) in context.iter() {
-                let plugin_path = plugins_dir.join(plugin);
+                let plugin_path = plugins_dir.join(plugin).with_extension("wasm");
                 let plugin_manager = plugin_manager.clone();
 
                 // Cheap clone of context

@@ -70,21 +70,27 @@ impl CreateService {
 
         // Determine plugin_name as an owned String
         let plugin_name: String = match self.plugin {
-            Some(plugin) => plugin,
+            Some(plugin) => {
+                // Check that the plugin actually exists
+                if !plugin_names.contains(&plugin) {
+                    anyhow::bail!("plugin `{}` does not exist", plugin);
+                }
+                plugin
+            },
             None => {
                 let selection = dialoguer::Select::with_theme(&prompt_theme)
                     .with_prompt("Select the plugin to use:")
                     .items(&plugin_names)
                     .default(0)
                     .interact()?;
-                plugin_names[selection].clone()
+
+                if let Some(plugin) = plugin_names.get(selection) {
+                    plugin.to_string()
+                } else {
+                    anyhow::bail!("plugin not found");
+                }
             }
         };
-
-        // Check that the plugin actually exists
-        if !plugin_names.contains(&plugin_name) {
-            anyhow::bail!("plugin `{}` does not exist", plugin_name);
-        }
 
         // Prompt for service identifier if not provided
         let identifier: String = ensure_kebab_case(match self.identifier {
@@ -127,7 +133,9 @@ impl CreateService {
             .interact()?;
 
         // Load plugin & configure plugin
-        let (instance, mut store) = plugin_manager.load_plugin(&plugin_name).await?;
+        let (instance, mut store) = plugin_manager.load_plugin(
+            plugins_dir.join(plugin_name).with_extension("wasm")
+        ).await?;
         service.configure(&instance.settings(&mut store).await?, use_default)?;
 
         tracing::info!("service `{identifier}` successfully created");

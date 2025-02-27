@@ -78,7 +78,7 @@ impl PingCommand {
 
         // For each service, spawn a separate task.
         for (plugin, service_list) in services {
-            let plugin_path = plugins_dir.join(&plugin);
+            let plugin_path = plugins_dir.join(&plugin).with_extension("wasm");
             if !plugin_path.exists() {
                 tracing::warn!(
                     "folder `{}/{}` has no plugin associated.",

@@ -67,20 +67,18 @@ impl PluginManager {
     }
 
     pub fn plugin_names(&self, base_dir: impl AsRef<path::Path>) -> anyhow::Result<Vec<String>> {
-        let mut plugins = Vec::new();
-
-        if base_dir.as_ref().exists() {
-            for entry in fs::read_dir(base_dir)? {
-                let entry = entry?;
-                if entry.file_type()?.is_file() {
-                    plugins.push(entry.file_name().to_string_lossy().to_string());
+        fs::read_dir(base_dir)
+        .map(|entries| {
+            entries.filter_map(|entry| {
+                let path = entry.ok()?.path();
+                if path.extension()?.to_str()? == "wasm" {
+                    path.file_stem()?.to_str().map(String::from)
+                } else {
+                    None
                 }
-            }
-        } else {
-            bail!("no plugin installed");
-        }
-
-        Ok(plugins)
+            }).collect()
+        })
+        .map_err(|e| e.into())
     }
 }
 
