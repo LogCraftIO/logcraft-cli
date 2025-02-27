@@ -48,7 +48,7 @@ fn test_validate() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
     let mut env = common::TestingEnv::init(false, temp_dir.path(), None, true)?;
     env.session
-        .exp_string(&format!("`{}` saved", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
