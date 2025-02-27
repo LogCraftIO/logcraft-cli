@@ -205,6 +205,7 @@ impl ApplyCommand {
         // Prompt the user for approval
         if to_create.is_empty() & to_update.is_empty() & to_remove.is_empty() {
             tracing::info!("no changes detected.");
+            state_backend.save(&mut state).await?;
             state_backend.unlock(state_lock).await?;
             return Ok(());
         } else if !self.auto_approve
