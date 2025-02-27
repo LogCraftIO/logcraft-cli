@@ -38,7 +38,7 @@ jobs:
       - name: Upload CLI Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: lgc
+          name: lgc-${{ steps.toLowerCase.outputs.osLowercase }}-${{ steps.toLowerCase.outputs.archLowercase }}-tarballs
           path: |
             releases/lgc-${{ steps.toLowerCase.outputs.osLowercase }}-${{ steps.toLowerCase.outputs.archLowercase }}.tar.gz
             releases/lgc-${{ steps.toLowerCase.outputs.osLowercase }}-${{ steps.toLowerCase.outputs.archLowercase }}.tar.gz.sha256
