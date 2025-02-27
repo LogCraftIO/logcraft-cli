@@ -38,7 +38,7 @@ impl ValidateCommand {
         // Instantiate plugins & validate detections
         for plugin in plugin_names {
             // Check if the plugin exists.
-            let plugin_path = plugins_dir.join(&plugin);
+            let plugin_path = plugins_dir.join(&plugin).with_extension("wasm");
             if !plugin_path.exists() {
                 tracing::warn!(
                     "folder `{}/{}` has no plugin associated.",
