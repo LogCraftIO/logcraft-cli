@@ -21,6 +21,6 @@ jobs:
         with:
           auto-install: true
       # Check code formatting
-      - run: "moon lgc:format"
+      - run: "moon :format --affected"
       # Run tests
-      - run: "moon lgc:test"
+      - run: "moon :test --affected"

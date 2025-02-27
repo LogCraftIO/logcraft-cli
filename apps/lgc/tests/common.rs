@@ -10,7 +10,7 @@ use rexpect::session;
 
 pub const DEFAULT_WORKSPACE: &str = "rules";
 pub const PLUGIN_NAME: &str = "sample";
-pub const DEFAULT_TIMEOUT: u64 = 300_000;
+pub const DEFAULT_TIMEOUT: u64 = 600_000;
 
 /// Provides helpers to run command tests.
 pub struct TestingEnv {

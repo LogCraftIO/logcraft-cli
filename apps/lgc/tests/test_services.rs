@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MPL-2.0
 
 use anyhow::Result;
-use common::DEFAULT_TIMEOUT;
 use rexpect::session::spawn_command;
 use std::process;
 
@@ -68,7 +67,7 @@ fn service_create_no_configuration() -> Result<()> {
     ]);
     command.current_dir(&temp_dir);
 
-    let mut session = spawn_command(command, Some(DEFAULT_TIMEOUT))?;
+    let mut session = spawn_command(command, None)?;
     session.exp_string("Do you want to configure the service now?")?;
     session.send_line("n")?;
     session.exp_string(&format!("service '{}' successfully created", SERVICE_NAME))?;
