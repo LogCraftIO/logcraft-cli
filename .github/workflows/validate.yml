@@ -21,6 +21,6 @@ jobs:
         with:
           auto-install: true
       # Check code formatting
-      - run: "moon :format --affected"
+      - run: "moon :format --affected --remote"
       # Run tests
-      - run: "moon :test --affected"
+      - run: "moon :test --affected --remote"
