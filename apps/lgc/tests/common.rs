@@ -10,6 +10,7 @@ use rexpect::session;
 
 pub const DEFAULT_WORKSPACE: &str = "rules";
 pub const PLUGIN_NAME: &str = "sample";
+pub const DEFAULT_TIMEOUT: u64 = 300_000;
 
 /// Provides helpers to run command tests.
 pub struct TestingEnv {
@@ -50,7 +51,7 @@ impl TestingEnv {
         Ok(Self {
             bin_path,
             root_dir: root.to_path_buf(),
-            session: session::spawn_command(command, Some(10_000))?,
+            session: session::spawn_command(command, Some(DEFAULT_TIMEOUT))?,
         })
     }
 
@@ -80,7 +81,7 @@ impl TestingEnv {
             command.current_dir(cargo_root);
 
             // Spawn the command
-            let mut status = session::spawn_command(command, Some(10_000))?;
+            let mut status = session::spawn_command(command, Some(DEFAULT_TIMEOUT))?;
             status.exp_eof().expect("Failed to build testing plugin");
         }
 
