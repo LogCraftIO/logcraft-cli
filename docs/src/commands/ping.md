@@ -11,7 +11,7 @@ When ping is called without parameter, all services are contacted.
 ```bash
 % lgc ping
 splunk-prod... OK
-splunk-dev... when calling ping for plugin `splunk`: ErrorCode::DnsError(DnsErrorPayload { rcode: Some("address not available"), info-code: Some(0) })
+splunk-dev... when calling ping for plugin 'splunk': ErrorCode::DnsError(DnsErrorPayload { rcode: Some("address not available"), info-code: Some(0) })
 tanium-prod... OK
 %
 ```
