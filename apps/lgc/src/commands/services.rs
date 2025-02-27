@@ -76,7 +76,7 @@ impl CreateService {
                     anyhow::bail!("plugin '{}' does not exist", plugin);
                 }
                 plugin
-            },
+            }
             None => {
                 let selection = dialoguer::Select::with_theme(&prompt_theme)
                     .with_prompt("Select the plugin to use:")
@@ -133,9 +133,9 @@ impl CreateService {
             .interact()?;
 
         // Load plugin & configure plugin
-        let (instance, mut store) = plugin_manager.load_plugin(
-            plugins_dir.join(plugin_name).with_extension("wasm")
-        ).await?;
+        let (instance, mut store) = plugin_manager
+            .load_plugin(plugins_dir.join(plugin_name).with_extension("wasm"))
+            .await?;
         service.configure(&instance.settings(&mut store).await?, use_default)?;
 
         tracing::info!("service '{identifier}' successfully created");
