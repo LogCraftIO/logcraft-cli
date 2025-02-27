@@ -119,7 +119,7 @@ impl LogCraftCli {
                         }
                     };
                 } else {
-                    tracing::error!("unable to find configuration file, run `lgc init` to initialize a new project");
+                    tracing::error!("no configuration file, run 'lgc init' to initialize a new project");
                     std::process::exit(1)
                 }
             }

@@ -73,7 +73,7 @@ impl CreateService {
             Some(plugin) => {
                 // Check that the plugin actually exists
                 if !plugin_names.contains(&plugin) {
-                    anyhow::bail!("plugin `{}` does not exist", plugin);
+                    anyhow::bail!("plugin '{}' does not exist", plugin);
                 }
                 plugin
             },
@@ -102,7 +102,7 @@ impl CreateService {
 
         // Check if service already exists
         if config.services.contains_key(&identifier) {
-            anyhow::bail!("identifier `{identifier}` is already defined");
+            anyhow::bail!("identifier '{identifier}' is already defined");
         }
 
         // Prompt for environment name if not provided
@@ -138,7 +138,7 @@ impl CreateService {
         ).await?;
         service.configure(&instance.settings(&mut store).await?, use_default)?;
 
-        tracing::info!("service `{identifier}` successfully created");
+        tracing::info!("service '{identifier}' successfully created");
 
         // Insert the service into the config
         config.services.insert(identifier, service);
@@ -205,10 +205,10 @@ impl RemoveService {
 
         // Remove service from configuation
         if config.services.remove_entry(&identifier).is_none() {
-            anyhow::bail!("service `{}` not found", &identifier)
+            anyhow::bail!("service '{}' not found", &identifier)
         }
 
-        tracing::info!("service `{identifier}` successfully removed");
+        tracing::info!("service '{identifier}' successfully removed");
 
         // Save changes
         config.save_config(None)
@@ -252,7 +252,7 @@ impl ConfigureService {
         let service = config
             .services
             .get_mut(&identifier)
-            .ok_or_else(|| anyhow::anyhow!("service `{}` not found", &identifier))?;
+            .ok_or_else(|| anyhow::anyhow!("service '{}' not found", &identifier))?;
 
         // Load plugin
         let (instance, mut store) = PluginManager::new()?.load_plugin(&service.plugin).await?;
@@ -260,7 +260,7 @@ impl ConfigureService {
         // Start plugin's service configuration
         service.configure(&instance.settings(&mut store).await?, false)?;
 
-        tracing::info!("service `{identifier}` configured");
+        tracing::info!("service '{identifier}' configured");
 
         config.save_config(None)
     }

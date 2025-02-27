@@ -54,7 +54,7 @@ impl PlanCommand {
             let exists = plugins_dir.join(name).with_extension("wasm").exists();
             if !exists {
                 tracing::warn!(
-                    "folder `{}/{}` has no plugin associated.",
+                    "ignoring '{}/{}' (no matching plugin).",
                     config.core.workspace,
                     name
                 );
@@ -105,7 +105,7 @@ impl PlanCommand {
                                 }
                                 Err(e) => {
                                     anyhow::bail!(
-                                        "retrieving detection '{}' for service `{}`: {}",
+                                        "retrieving {} for service {}: {}",
                                         path,
                                         service_name,
                                         e
@@ -157,7 +157,7 @@ impl PlanCommand {
                                 let desired: Value = serde_json::from_slice(desired)?;
                                 if &desired != plugin_val {
                                     println!(
-                                        "[~] `{}` will be updated on service `{}`",
+                                        "[~] {} will be updated on {}",
                                         MODIFY_STYLE.apply_to(path),
                                         BOLD_STYLE.apply_to(svc_name),
                                     );
@@ -174,7 +174,7 @@ impl PlanCommand {
                             // Rule is not in the context but is in the state
                             None => {
                                 println!(
-                                    "[-] `{}` will be removed on service `{}`",
+                                    "[-] {} will be removed from {}",
                                     REMOVE_STYLE.apply_to(path),
                                     BOLD_STYLE.apply_to(svc_name),
                                 );
@@ -187,7 +187,7 @@ impl PlanCommand {
                     // Check what remains in the detection context that is not in the state
                     for rule in detection_keys {
                         println!(
-                            "[+] `{}` will be created on service `{}`",
+                            "[+] {} will be created on {}",
                             ADD_STYLE.apply_to(rule),
                             BOLD_STYLE.apply_to(svc_name),
                         );

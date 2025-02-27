@@ -41,7 +41,7 @@ impl ValidateCommand {
             let plugin_path = plugins_dir.join(&plugin).with_extension("wasm");
             if !plugin_path.exists() {
                 tracing::warn!(
-                    "folder `{}/{}` has no plugin associated.",
+                    "ignoring '{}/{}' (no matching plugin).",
                     config.core.workspace,
                     plugin
                 );
@@ -82,7 +82,7 @@ impl ValidateCommand {
                 Ok(result) => {
                     let errors = result?;
                     for (path, err) in errors {
-                        tracing::error!("validation failed on `{path}`, {err}");
+                        tracing::error!("validation failed on '{path}': {err}");
                         has_error = true;
                     }
                 }
