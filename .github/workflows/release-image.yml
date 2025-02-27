@@ -48,8 +48,7 @@ jobs:
         uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          # Remove the "lgc/" prefix from the git tag (e.g. "lgc/v1.0.0" becomes "v1.0.0")
-          tags: ${{ replace(github.ref_name, 'lgc/', '') }}
+          tags: ${{ github.ref_name[4:] }}
 
       # Build and push Docker image with Buildx (don't push on PR)
       - name: Build and push Docker image
