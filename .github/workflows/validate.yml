@@ -10,7 +10,7 @@ name: Code testing and formatting
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: macos-15
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
