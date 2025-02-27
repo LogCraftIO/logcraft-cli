@@ -68,17 +68,19 @@ impl PluginManager {
 
     pub fn plugin_names(&self, base_dir: impl AsRef<path::Path>) -> anyhow::Result<Vec<String>> {
         fs::read_dir(base_dir)
-        .map(|entries| {
-            entries.filter_map(|entry| {
-                let path = entry.ok()?.path();
-                if path.extension()?.to_str()? == "wasm" {
-                    path.file_stem()?.to_str().map(String::from)
-                } else {
-                    None
-                }
-            }).collect()
-        })
-        .map_err(|e| e.into())
+            .map(|entries| {
+                entries
+                    .filter_map(|entry| {
+                        let path = entry.ok()?.path();
+                        if path.extension()?.to_str()? == "wasm" {
+                            path.file_stem()?.to_str().map(String::from)
+                        } else {
+                            None
+                        }
+                    })
+                    .collect()
+            })
+            .map_err(|e| e.into())
     }
 }
 

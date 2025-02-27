@@ -113,7 +113,7 @@ impl DestroyCommand {
             let plugin_path = plugins_dir.join(&plugin).with_extension("wasm");
             if !plugin_path.exists() {
                 tracing::warn!(
-                    "folder `{}/{}` has no plugin associated.",
+                    "ignoring '{}/{}' (no matching plugin).",
                     config.core.workspace,
                     plugin
                 );
@@ -135,12 +135,7 @@ impl DestroyCommand {
                             }
                             Ok(None) => {}
                             Err(e) => {
-                                anyhow::bail!(
-                                    "retrieving detection '{}' for service `{}`: {}",
-                                    path,
-                                    service_name,
-                                    e
-                                )
+                                anyhow::bail!("retrieving {} for {}: {}", path, service_name, e)
                             }
                         }
                     }
@@ -161,7 +156,7 @@ impl DestroyCommand {
                 for (service_name, rules) in &services {
                     for (path, _, _) in rules {
                         println!(
-                            "[-] `{}` will be removed from service `{}`",
+                            "[-] {} will be removed from {}",
                             REMOVE_STYLE.apply_to(path),
                             BOLD_STYLE.apply_to(service_name)
                         );
@@ -201,14 +196,14 @@ impl DestroyCommand {
                                 rules.remove(&path);
                             }
                             println!(
-                                "`{}` removed from service `{}`",
+                                "{} removed from {}",
                                 REMOVE_STYLE.apply_to(&path),
                                 BOLD_STYLE.apply_to(&service_name)
                             );
                         }
                         Err(e) => {
                             tracing::warn!(
-                                "failed to delete rule `{}` on service `{}`: {}",
+                                "failed to remove {} from {}: {}",
                                 path,
                                 service_name,
                                 e

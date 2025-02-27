@@ -42,7 +42,7 @@ impl SentinelRule {
         // Validate the rule against the json schema.
         SCHEMA_VALIDATOR.validate(&detection).map_err(|e| {
             format!(
-                "field: `{}`",
+                "field: {}",
                 e.instance_path
                     .to_string()
                     .trim_start_matches('/')
@@ -67,7 +67,7 @@ impl SentinelRule {
             if e.path().to_string() == "." {
                 format!("error: {message}")
             } else {
-                format!("field: `{}`, error: {message}", e.path())
+                format!("field: {}, error: {message}", e.path())
             }
         })
     }

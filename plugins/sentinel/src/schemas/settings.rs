@@ -99,7 +99,7 @@ impl Sentinel {
 
         serde_path_to_error::deserialize(&mut de).map_err(|e| {
             format!(
-                "field: `{}`, error: {}",
+                "field: {}, error: {}",
                 e.path(),
                 e.inner()
                     .to_string()

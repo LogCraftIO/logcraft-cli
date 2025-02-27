@@ -4,7 +4,7 @@ This command ensures the detections are correctly formatted, typed, and consiste
 
 ```sh
 % lgc validate
-ERROR validation failed on 'some-detection.yml' on parameter 'disabled'
+ERROR validation failed on 'rules/splunk/some-detection.yaml': field: 'parameters.disabled', error: invalid type: string "fals", expected a boolean
 %
 ```
 

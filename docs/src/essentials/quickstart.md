@@ -97,7 +97,7 @@ Great. Now, edit the detection (YAML) file `rules/splunk/our-first-detection.yam
 
 ```bash
 security-repo % lgc validate
-ERROR validation failed on `rules/splunk/our-first-detection.yaml`, field: `parameters.disabled`, error: invalid type: string "hello", expected a boolean
+ERROR validation failed on 'rules/splunk/our-first-detection.yaml', field: 'parameters.disabled', error: invalid type: string "hello", expected a boolean
 security-repo %
 ```
 
@@ -109,7 +109,7 @@ Fix the detection, and see what changes [may occur](../commands/plan.md) if they
 
 ```bash
 security-repo % lgc plan
-[+] `rules/splunk/our-first-detection.yaml` will be created on service `splunk-prod`
+[+] rules/splunk/our-first-detection.yaml will be created on splunk-prod
 security-repo %
 ```
 
@@ -117,9 +117,9 @@ Obviously, this new rule is going to be created. These changes can be propagated
 
 ```bash
 security-repo % lgc apply
-[+] `rules/splunk/our-first-detection.yaml` will be created on service `splunk-prod`
+[+] rules/splunk/our-first-detection.yaml will be created on service splunk-prod
 Apply these changes? yes
-`rules/splunk/our-first-detection.yaml` created on service `splunk-prod`
+rules/splunk/our-first-detection.yaml created on splunk-prod
 security-repo %
 ```
 
@@ -127,7 +127,7 @@ Now, edit the detection rule to change one or multiple parameters, and repeat th
 
 ```bash
 security-repo % lgc plan --verbose
-[~] `rules/splunk/our-first-detection.yaml` will be updated on service `splunk-prod`
+[~] rules/splunk/our-first-detection.yaml will be updated on splunk-prod
 ---
    parameters.disabled: false => true
 ---
@@ -138,7 +138,7 @@ Use the `--verbose` flag to get detailed information about the changes. In this 
 
 ```bash
 security-repo % lgc plan --verbose
-[~] `rules/splunk/detect-high-entropy-domains.yaml` will be updated on service `splunk-prod`
+[~] rules/splunk/detect-high-entropy-domains.yaml will be updated on splunk-prod
 ---
    search:
         sourcetype=proxy

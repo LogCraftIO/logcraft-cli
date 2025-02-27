@@ -71,7 +71,7 @@ impl SplunkRule {
         // Validate the rule against the json schema.
         SCHEMA_VALIDATOR.validate(&detection).map_err(|e| {
             format!(
-                "field: `{}`",
+                "field: {}",
                 e.instance_path
                     .to_string()
                     .trim_start_matches('/')
@@ -87,7 +87,7 @@ impl SplunkRule {
 
         serde_path_to_error::deserialize(&mut de).map_err(|e| {
             format!(
-                "field: `{}`, error: {}",
+                "field: {}, error: {}",
                 e.path(),
                 e.inner()
                     .to_string()

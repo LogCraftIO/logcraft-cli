@@ -46,7 +46,7 @@ impl ApplyCommand {
             let exists = plugins_dir.join(name).with_extension("wasm").exists();
             if !exists {
                 tracing::warn!(
-                    "folder `{}/{}` has no plugin associated.",
+                    "ignoring '{}/{}' (no matching plugin).",
                     config.core.workspace,
                     name
                 );
@@ -96,7 +96,7 @@ impl ApplyCommand {
                             }
                             Err(e) => {
                                 anyhow::bail!(
-                                    "retrieving detection '{}' for service `{}`: {}",
+                                    "retrieving detection '{}' for service '{}': {}",
                                     path,
                                     service_name,
                                     e
@@ -142,7 +142,7 @@ impl ApplyCommand {
                                 if &desired != current_val {
                                     if !self.auto_approve {
                                         println!(
-                                            "[~] `{}` will be updated on service `{}`",
+                                            "[~] {} will be updated on {}",
                                             MODIFY_STYLE.apply_to(rule),
                                             BOLD_STYLE.apply_to(svc_name)
                                         );
@@ -165,7 +165,7 @@ impl ApplyCommand {
                             None => {
                                 if !self.auto_approve {
                                     println!(
-                                        "[-] `{}` will be removed on service `{}`",
+                                        "[-] {} will be removed from {}",
                                         REMOVE_STYLE.apply_to(rule),
                                         BOLD_STYLE.apply_to(svc_name)
                                     );
@@ -190,7 +190,7 @@ impl ApplyCommand {
                     {
                         if !self.auto_approve {
                             println!(
-                                "[+] `{}` will be created on service `{}`",
+                                "[+] {} will be created on {}",
                                 ADD_STYLE.apply_to(&path),
                                 BOLD_STYLE.apply_to(svc_name)
                             );
@@ -205,6 +205,7 @@ impl ApplyCommand {
         // Prompt the user for approval
         if to_create.is_empty() & to_update.is_empty() & to_remove.is_empty() {
             tracing::info!("no changes detected.");
+            state_backend.save(&mut state).await?;
             state_backend.unlock(state_lock).await?;
             return Ok(());
         } else if !self.auto_approve
@@ -231,15 +232,10 @@ impl ApplyCommand {
                 if let Some(to_create) = to_create.get(svc_name) {
                     for (path, desired) in to_create {
                         if let Err(e) = instance.create(&mut store, settings, desired).await {
-                            tracing::warn!(
-                                "failed to create rule `{}` on service `{}`: {}",
-                                path,
-                                svc_name,
-                                e
-                            );
+                            tracing::warn!("failed to create {} on {}: {}", path, svc_name, e);
                         } else {
                             println!(
-                                "`{}` created on service `{}`",
+                                "{} created on {}",
                                 ADD_STYLE.apply_to(path),
                                 BOLD_STYLE.apply_to(&svc_name)
                             );
@@ -256,15 +252,10 @@ impl ApplyCommand {
                 if let Some(to_update) = to_update.get(svc_name) {
                     for (path, desired) in to_update {
                         if let Err(e) = instance.update(&mut store, settings, desired).await {
-                            tracing::warn!(
-                                "failed to update rule `{}` on service `{}`: {}",
-                                path,
-                                svc_name,
-                                e
-                            );
+                            tracing::warn!("failed to update {} on {}: {}", path, svc_name, e);
                         } else {
                             println!(
-                                "`{}` updated on service `{}`",
+                                "{} updated on {}",
                                 MODIFY_STYLE.apply_to(path),
                                 BOLD_STYLE.apply_to(&svc_name)
                             );
@@ -286,14 +277,14 @@ impl ApplyCommand {
                                     rules.remove(path);
                                 }
                                 println!(
-                                    "`{}` removed from service `{}`",
+                                    "{} removed from {}",
                                     REMOVE_STYLE.apply_to(path),
                                     BOLD_STYLE.apply_to(&svc_name)
                                 );
                             }
                             Err(e) => {
                                 tracing::warn!(
-                                    "failed to delete rule `{}` on service `{}`: {}",
+                                    "failed to remove {} from {}: {}",
                                     path,
                                     svc_name,
                                     e

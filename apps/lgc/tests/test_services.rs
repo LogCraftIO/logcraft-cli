@@ -18,7 +18,7 @@ fn service_command_no_project() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
     let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
     env.session
-        .exp_string(&format!("`{}` saved", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
 
     // Remove `lgc.toml` to simulate a project that has not been initialized
     let config_file = temp_dir.path().join(LGC_CONFIG_PATH);
@@ -30,9 +30,7 @@ fn service_command_no_project() -> Result<()> {
     command.current_dir(&temp_dir);
 
     let mut session = spawn_command(command, None)?;
-    session.exp_string(
-        "unable to find configuration file, run `lgc init` to initialize a new project",
-    )?;
+    session.exp_string("no configuration file, run 'lgc init' to initialize a new project")?;
     session.exp_eof()?;
 
     Ok(())
@@ -44,15 +42,15 @@ fn service_create_no_configuration() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
     let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
     env.session
-        .exp_string(&format!("`{}` saved", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
 
     common::assert_file_exists(
-        &temp_dir.join(".logcraft/plugins/sample"),
+        &temp_dir.join(".logcraft/plugins/sample.wasm"),
         true,
-        "Plugin `sample` not found in testing project",
+        "Plugin 'sample' not found in testing project",
     );
 
     // Create a new command to create a service
@@ -69,10 +67,10 @@ fn service_create_no_configuration() -> Result<()> {
     ]);
     command.current_dir(&temp_dir);
 
-    let mut session = spawn_command(command, Some(10_000))?;
+    let mut session = spawn_command(command, None)?;
     session.exp_string("Do you want to configure the service now?")?;
     session.send_line("n")?;
-    session.exp_string(&format!("service `{}` successfully created", SERVICE_NAME))?;
+    session.exp_string(&format!("service '{}' successfully created", SERVICE_NAME))?;
     session.exp_eof()?;
 
     Ok(())
@@ -84,14 +82,14 @@ fn service_create_with_configuration() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
     let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
     env.session
-        .exp_string(&format!("`{}` saved", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
     common::assert_file_exists(
-        &temp_dir.join(".logcraft/plugins/sample"),
+        &temp_dir.join(".logcraft/plugins/sample.wasm"),
         true,
-        "Plugin `sample` not found in testing project",
+        "Plugin 'sample' not found in testing project",
     );
 
     // Create a new command to create a service
@@ -116,7 +114,7 @@ fn service_create_with_configuration() -> Result<()> {
     for _ in 0..6 {
         session.send_line("")?;
     }
-    session.exp_string(&format!("service `{}` successfully created", SERVICE_NAME))?;
+    session.exp_string(&format!("service '{}' successfully created", SERVICE_NAME))?;
     session.exp_eof()?;
 
     Ok(())
@@ -128,7 +126,7 @@ fn service_list_empty() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
     let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
     env.session
-        .exp_string(&format!("`{}` saved", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
 
     // List services when none exist
     let mut command = process::Command::new(&env.bin_path);
@@ -147,7 +145,7 @@ fn service_create_invalid_values() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
     let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
     env.session
-        .exp_string(&format!("`{}` saved", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
@@ -203,7 +201,7 @@ fn service_create_invalid_values() -> Result<()> {
     command.current_dir(&temp_dir);
 
     let mut session = spawn_command(command, None)?;
-    session.exp_string("plugin `non-existent-plugin` does not exist")?;
+    session.exp_string("plugin 'non-existent-plugin' does not exist")?;
     session.exp_eof()?;
 
     Ok(())
@@ -215,14 +213,14 @@ fn service_list() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
     let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
     env.session
-        .exp_string(&format!("`{}` saved", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
     common::assert_file_exists(
-        &temp_dir.join(".logcraft/plugins/sample"),
+        &temp_dir.join(".logcraft/plugins/sample.wasm"),
         true,
-        "Plugin `sample` not found in testing project",
+        "Plugin 'sample' not found in testing project",
     );
 
     // Create a new command to create a service
@@ -242,7 +240,7 @@ fn service_list() -> Result<()> {
     let mut session = spawn_command(command, None)?;
     session.exp_string("Do you want to configure the service now?")?;
     session.send_line("n")?;
-    session.exp_string(&format!("service `{}` successfully created", SERVICE_NAME))?;
+    session.exp_string(&format!("service '{}' successfully created", SERVICE_NAME))?;
     session.exp_eof()?;
 
     // List services
@@ -264,14 +262,14 @@ fn service_remove() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
     let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
     env.session
-        .exp_string(&format!("`{}` saved", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
     common::assert_file_exists(
-        &temp_dir.join(".logcraft/plugins/sample"),
+        &temp_dir.join(".logcraft/plugins/sample.wasm"),
         true,
-        "Plugin `sample` not found in testing project",
+        "Plugin 'sample' not found in testing project",
     );
 
     // Create a new command to create a service
@@ -291,7 +289,7 @@ fn service_remove() -> Result<()> {
     let mut session = spawn_command(command, None)?;
     session.exp_string("Do you want to configure the service now?")?;
     session.send_line("n")?;
-    session.exp_string(&format!("service `{}` successfully created", SERVICE_NAME))?;
+    session.exp_string(&format!("service '{}' successfully created", SERVICE_NAME))?;
     session.exp_eof()?;
 
     // Remove the service
@@ -300,7 +298,7 @@ fn service_remove() -> Result<()> {
     command.current_dir(&temp_dir);
 
     let mut session = spawn_command(command, None)?;
-    session.exp_string(&format!("service `{}` successfully removed", SERVICE_NAME))?;
+    session.exp_string(&format!("service '{}' successfully removed", SERVICE_NAME))?;
     session.exp_eof()?;
 
     Ok(())
@@ -312,14 +310,14 @@ fn service_remove_non_existent() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
     let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
     env.session
-        .exp_string(&format!("`{}` saved", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
     common::assert_file_exists(
-        &temp_dir.join(".logcraft/plugins/sample"),
+        &temp_dir.join(".logcraft/plugins/sample.wasm"),
         true,
-        "Plugin `sample` not found in testing project",
+        "Plugin 'sample' not found in testing project",
     );
 
     // Create a new command to create a service
@@ -339,7 +337,7 @@ fn service_remove_non_existent() -> Result<()> {
     let mut session = spawn_command(command, None)?;
     session.exp_string("Do you want to configure the service now?")?;
     session.send_line("n")?;
-    session.exp_string(&format!("service `{}` successfully created", SERVICE_NAME))?;
+    session.exp_string(&format!("service '{}' successfully created", SERVICE_NAME))?;
     session.exp_eof()?;
 
     // Remove a service that does not exist
@@ -348,7 +346,7 @@ fn service_remove_non_existent() -> Result<()> {
     command.current_dir(&temp_dir);
 
     let mut session = spawn_command(command, None)?;
-    session.exp_string("service `non-existent-service` not found")?;
+    session.exp_string("service 'non-existent-service' not found")?;
     session.exp_eof()?;
 
     Ok(())
@@ -360,14 +358,14 @@ fn service_configure_non_existent() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
     let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
     env.session
-        .exp_string(&format!("`{}` saved", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
     common::assert_file_exists(
-        &temp_dir.join(".logcraft/plugins/sample"),
+        &temp_dir.join(".logcraft/plugins/sample.wasm"),
         true,
-        "Plugin `sample` not found in testing project",
+        "Plugin 'sample' not found in testing project",
     );
 
     // Create a new command to create a service
@@ -387,7 +385,7 @@ fn service_configure_non_existent() -> Result<()> {
     let mut session = spawn_command(command, None)?;
     session.exp_string("Do you want to configure the service now?")?;
     session.send_line("n")?;
-    session.exp_string(&format!("service `{}` successfully created", SERVICE_NAME))?;
+    session.exp_string(&format!("service '{}' successfully created", SERVICE_NAME))?;
     session.exp_eof()?;
 
     // Remove a service that does not exist
@@ -396,7 +394,7 @@ fn service_configure_non_existent() -> Result<()> {
     command.current_dir(&temp_dir);
 
     let mut session = spawn_command(command, None)?;
-    session.exp_string("service `non-existent-service` not found")?;
+    session.exp_string("service 'non-existent-service' not found")?;
     session.exp_eof()?;
 
     Ok(())
@@ -408,14 +406,14 @@ fn service_configure() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
     let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
     env.session
-        .exp_string(&format!("`{}` saved", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
     common::assert_file_exists(
-        &temp_dir.join(".logcraft/plugins/sample"),
+        &temp_dir.join(".logcraft/plugins/sample.wasm"),
         true,
-        "Plugin `sample` not found in testing project",
+        "Plugin 'sample' not found in testing project",
     );
 
     // Create a new command to create a service
@@ -435,7 +433,7 @@ fn service_configure() -> Result<()> {
     let mut session = spawn_command(command, None)?;
     session.exp_string("Do you want to configure the service now?")?;
     session.send_line("n")?;
-    session.exp_string(&format!("service `{}` successfully created", SERVICE_NAME))?;
+    session.exp_string(&format!("service '{}' successfully created", SERVICE_NAME))?;
     session.exp_eof()?;
 
     // Configure the service
@@ -447,7 +445,7 @@ fn service_configure() -> Result<()> {
     for _ in 0..6 {
         session.send_line("")?;
     }
-    session.exp_string(&format!("service `{}` configured", SERVICE_NAME))?;
+    session.exp_string(&format!("service '{}' configured", SERVICE_NAME))?;
     session.exp_eof()?;
 
     Ok(())
@@ -459,7 +457,7 @@ fn service_commands_empty_service_list() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
     let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
     env.session
-        .exp_string(&format!("`{}` saved", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
 
     // Remove a service that does not exist
     let mut command = process::Command::new(&env.bin_path);

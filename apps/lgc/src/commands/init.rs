@@ -31,28 +31,28 @@ impl InitCommand {
 
         let project_path = std::path::PathBuf::from_str(&self.root)?;
         if !project_path.exists() {
-            bail!("directory `{}` does not exist", self.root)
+            bail!("directory '{}' does not exist", self.root)
         } else if !project_path.is_dir() {
-            bail!("`{}` is not a directory", self.root)
+            bail!("'{}' is not a directory", self.root)
         }
 
         if self.create {
             let rules_dir = &project_path.join(&self.workspace);
             if std::path::Path::new(rules_dir).exists() {
-                bail!("workspace directory `{}` already exists", self.workspace)
+                bail!("workspace directory '{}' already exists", self.workspace)
             }
 
             // Create detections directory & configuration file
             if let Err(e) = std::fs::create_dir(rules_dir) {
-                bail!("unable to create detection rules directory: `{}`", e)
+                bail!("unable to create detection rules directory: {}", e)
             }
 
-            tracing::info!("workspace directory `{}` created", self.workspace);
+            tracing::info!("workspace directory '{}' created", self.workspace);
         }
 
         let config_path = &project_path.join(configuration::LGC_CONFIG_PATH);
         if std::fs::File::create_new(config_path).is_err() {
-            bail!("`{}` already exists", configuration::LGC_CONFIG_PATH)
+            bail!("{} already exists", configuration::LGC_CONFIG_PATH)
         }
 
         // Save the configuration
@@ -65,7 +65,7 @@ impl InitCommand {
         }
         .save_config(config_path.to_str())?;
 
-        tracing::info!("`{}` saved", configuration::LGC_CONFIG_PATH);
+        tracing::info!("{} saved", configuration::LGC_CONFIG_PATH);
         Ok(())
     }
 }

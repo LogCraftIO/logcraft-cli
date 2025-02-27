@@ -43,7 +43,7 @@ impl PingCommand {
                 } else {
                     let environment_services = config.environment_services(&identifier);
                     if environment_services.is_empty() {
-                        anyhow::bail!("invalid identifier `{}`.", identifier);
+                        anyhow::bail!("invalid identifier '{}'.", identifier);
                     } else {
                         for (name, configuration) in environment_services {
                             let settings = serde_json::to_vec(&configuration.settings)?;
@@ -81,7 +81,7 @@ impl PingCommand {
             let plugin_path = plugins_dir.join(&plugin).with_extension("wasm");
             if !plugin_path.exists() {
                 tracing::warn!(
-                    "folder `{}/{}` has no plugin associated.",
+                    "ignoring '{}/{}' (no matching plugin).",
                     config.core.workspace,
                     plugin
                 );
@@ -92,7 +92,7 @@ impl PingCommand {
                 let plugin_manager = plugin_manager.clone();
                 let plugin_path = plugin_path.clone();
                 join_set.spawn(async move {
-                    tracing::info!("checking service `{}`", BOLD_STYLE.apply_to(&service_name));
+                    tracing::info!("checking {}", BOLD_STYLE.apply_to(&service_name));
 
                     // Create a new instance of the plugin and ping the service.
                     let (instance, mut store) = plugin_manager.load_plugin(plugin_path).await?;
@@ -112,7 +112,7 @@ impl PingCommand {
                             _ = interval.tick() => {
                                 if start.elapsed().as_secs() > 0 {
                                     tracing::info!(
-                                        "waiting for service `{}` [{}s elapsed]",
+                                        "waiting for {} [{}s elapsed]",
                                         BOLD_STYLE.apply_to(&service_name),
                                         start.elapsed().as_secs()
                                     );
@@ -125,13 +125,13 @@ impl PingCommand {
                     match ping_result {
                         Ok(_) => {
                             tracing::info!(
-                                "connection with service `{}` successful",
+                                "connection with {} successful",
                                 BOLD_STYLE.apply_to(&service_name)
                             );
                             Ok(())
                         }
                         Err(e) => Err(anyhow::anyhow!(
-                            "unable to contact service `{}`: {}",
+                            "unable to contact {}: {}",
                             BOLD_STYLE.apply_to(&service_name),
                             e
                         )),

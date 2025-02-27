@@ -48,14 +48,14 @@ fn test_validate() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
     let mut env = common::TestingEnv::init(false, temp_dir.path(), None, true)?;
     env.session
-        .exp_string(&format!("`{}` saved", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
     common::assert_file_exists(
-        &temp_dir.join(".logcraft/plugins/sample"),
+        &temp_dir.join(".logcraft/plugins/sample.wasm"),
         true,
-        "Plugin `sample` not found in testing project",
+        "Plugin 'sample' not found in testing project",
     );
 
     // Create a new command to create a service
@@ -75,7 +75,7 @@ fn test_validate() -> Result<()> {
     let mut session = spawn_command(command, None)?;
     session.exp_string("Do you want to configure the service now?")?;
     session.send_line("n")?;
-    session.exp_string(&format!("service `{}` successfully created", SERVICE_NAME))?;
+    session.exp_string(&format!("service '{}' successfully created", SERVICE_NAME))?;
     session.exp_eof()?;
 
     // Start detection validation
@@ -107,14 +107,14 @@ fn test_validate_empty_rules() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
     let mut env = common::TestingEnv::init(false, temp_dir.path(), None, true)?;
     env.session
-        .exp_string(&format!("`{}` saved", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
     common::assert_file_exists(
-        &temp_dir.join(".logcraft/plugins/sample"),
+        &temp_dir.join(".logcraft/plugins/sample.wasm"),
         true,
-        "Plugin `sample` not found in testing project",
+        "Plugin 'sample' not found in testing project",
     );
 
     // Create a new command to create a service
@@ -134,7 +134,7 @@ fn test_validate_empty_rules() -> Result<()> {
     let mut session = spawn_command(command, None)?;
     session.exp_string("Do you want to configure the service now?")?;
     session.send_line("n")?;
-    session.exp_string(&format!("service `{}` successfully created", SERVICE_NAME))?;
+    session.exp_string(&format!("service '{}' successfully created", SERVICE_NAME))?;
     session.exp_eof()?;
 
     // Remove a service that does not exist
@@ -153,16 +153,16 @@ fn test_validate_empty_rules() -> Result<()> {
 #[test]
 fn test_validate_plugin_missing() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
-    let mut env = common::TestingEnv::init(false, temp_dir.path(), None, true)?;
+    let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
     env.session
-        .exp_string(&format!("`{}` saved", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
     common::assert_file_exists(
-        &temp_dir.join(".logcraft/plugins/sample"),
+        &temp_dir.join(".logcraft/plugins/sample.wasm"),
         true,
-        "Plugin `sample` not found in testing project",
+        "Plugin 'sample' not found in testing project",
     );
 
     // Create a new command to create a service
@@ -182,7 +182,7 @@ fn test_validate_plugin_missing() -> Result<()> {
     let mut session = spawn_command(command, None)?;
     session.exp_string("Do you want to configure the service now?")?;
     session.send_line("n")?;
-    session.exp_string(&format!("service `{}` successfully created", SERVICE_NAME))?;
+    session.exp_string(&format!("service '{}' successfully created", SERVICE_NAME))?;
     session.exp_eof()?;
 
     // Start detection validation
@@ -203,7 +203,7 @@ fn test_validate_plugin_missing() -> Result<()> {
 
     let mut session = spawn_command(command, None)?;
     session.exp_string(&format!(
-        "folder `{}/noplugin` has no plugin associated",
+        "ignoring '{}/noplugin' (no matching plugin).",
         DEFAULT_WORKSPACE
     ))?;
     session.exp_string("all good, no problem identified.")?;
@@ -218,14 +218,14 @@ fn test_validate_incorrect_values() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
     let mut env = common::TestingEnv::init(false, temp_dir.path(), None, true)?;
     env.session
-        .exp_string(&format!("`{}` saved", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
     common::assert_file_exists(
-        &temp_dir.join(".logcraft/plugins/sample"),
+        &temp_dir.join(".logcraft/plugins/sample.wasm"),
         true,
-        "Plugin `sample` not found in testing project",
+        "Plugin 'sample' not found in testing project",
     );
 
     // Create a new command to create a service
@@ -245,7 +245,7 @@ fn test_validate_incorrect_values() -> Result<()> {
     let mut session = spawn_command(command, None)?;
     session.exp_string("Do you want to configure the service now?")?;
     session.send_line("n")?;
-    session.exp_string(&format!("service `{}` successfully created", SERVICE_NAME))?;
+    session.exp_string(&format!("service '{}' successfully created", SERVICE_NAME))?;
     session.exp_eof()?;
 
     // Start detection validation

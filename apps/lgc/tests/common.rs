@@ -4,10 +4,13 @@
 use std::{env, fs, path, process};
 
 use anyhow::Result;
+use lgc_common::configuration::ProjectConfiguration;
+use lgc_common::configuration::LGC_CONFIG_PATH;
 use rexpect::session;
 
 pub const DEFAULT_WORKSPACE: &str = "rules";
 pub const PLUGIN_NAME: &str = "sample";
+pub const DEFAULT_TIMEOUT: u64 = 600_000;
 
 /// Provides helpers to run command tests.
 pub struct TestingEnv {
@@ -44,14 +47,12 @@ impl TestingEnv {
             command.arg("--create");
         }
 
-        // Spawn the command & return the TestingEnv instance
-        let instance = Self {
+        // Return TestingEnv instance
+        Ok(Self {
             bin_path,
             root_dir: root.to_path_buf(),
-            session: session::spawn_command(command, Some(10_000))?,
-        };
-
-        Ok(instance)
+            session: session::spawn_command(command, Some(DEFAULT_TIMEOUT))?,
+        })
     }
 
     pub fn setup_plugin(&self) -> Result<()> {
@@ -80,12 +81,24 @@ impl TestingEnv {
             command.current_dir(cargo_root);
 
             // Spawn the command
-            let mut status = session::spawn_command(command, Some(10_000))?;
+            let mut status = session::spawn_command(command, Some(DEFAULT_TIMEOUT))?;
             status.exp_eof().expect("Failed to build testing plugin");
         }
 
         // Copy the dummy plugin to the plugin directory
-        fs::copy(plugin_path, plugin_dir.join(PLUGIN_NAME))?;
+        fs::copy(
+            plugin_path,
+            plugin_dir.join(PLUGIN_NAME).with_extension("wasm"),
+        )?;
+
+        // Load the configuration
+        let configuration_path = self.root_dir.join(LGC_CONFIG_PATH);
+        let configuration_content = fs::read_to_string(&configuration_path)?;
+
+        // Update base_dir for plugin retrieval
+        let mut configuration: ProjectConfiguration = toml::from_str(&configuration_content)?;
+        configuration.core.base_dir = Some(self.root_dir.join(".logcraft").display().to_string());
+        configuration.save_config(Some(configuration_path.to_str().unwrap()))?;
 
         Ok(())
     }

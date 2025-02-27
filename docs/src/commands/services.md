@@ -30,7 +30,7 @@ These parameters can also be set from the command line as illustrated below:
 
 ```sh
 % lgc services create -i splunk-prod -p splunk -e prod
-INFO service `splunk-prod` successfully created.
+INFO service 'splunk-prod' successfully created.
 %
 ```
 

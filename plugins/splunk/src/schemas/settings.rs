@@ -95,7 +95,7 @@ impl Splunk {
 
         serde_path_to_error::deserialize(&mut de).map_err(|e| {
             format!(
-                "field: `{}`, error: {}",
+                "field: {}, error: {}",
                 e.path(),
                 e.inner()
                     .to_string()
@@ -124,11 +124,11 @@ impl Splunk {
             Ok(response) => match response.status_code() {
                 200 => Ok(()),
                 404 => Err(format!(
-                    "target app `{}` not found",
+                    "target app '{}' not found",
                     self.app.as_deref().unwrap_or(DEFAULT_APP)
                 )),
                 code => Err(format!(
-                    "unable to check target app `{}`: {}",
+                    "unable to check target app '{}': {}",
                     self.app.as_deref().unwrap_or(DEFAULT_APP),
                     http::StatusCode::from_u16(code)
                         .map(|status| status.to_string())
