@@ -1,0 +1,26 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+name: Code testing and formatting
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # Prepare the toolchain
+      - uses: 'moonrepo/setup-toolchain@v0'
+        with:
+          auto-install: true
+      # Check code formatting
+      - run: "moon lgc:format"
+      # Run tests
+      - run: "moon lgc:test"
