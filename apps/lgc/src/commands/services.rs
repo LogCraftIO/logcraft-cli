@@ -73,10 +73,10 @@ impl CreateService {
             Some(plugin) => {
                 // Check that the plugin actually exists
                 if !plugin_names.contains(&plugin) {
-                    anyhow::bail!("plugin `{}` does not exist", plugin);
+                    anyhow::bail!("plugin '{}' does not exist", plugin);
                 }
                 plugin
-            },
+            }
             None => {
                 let selection = dialoguer::Select::with_theme(&prompt_theme)
                     .with_prompt("Select the plugin to use:")
@@ -102,7 +102,7 @@ impl CreateService {
 
         // Check if service already exists
         if config.services.contains_key(&identifier) {
-            anyhow::bail!("identifier `{identifier}` is already defined");
+            anyhow::bail!("identifier '{identifier}' is already defined");
         }
 
         // Prompt for environment name if not provided
@@ -133,12 +133,12 @@ impl CreateService {
             .interact()?;
 
         // Load plugin & configure plugin
-        let (instance, mut store) = plugin_manager.load_plugin(
-            plugins_dir.join(plugin_name).with_extension("wasm")
-        ).await?;
+        let (instance, mut store) = plugin_manager
+            .load_plugin(plugins_dir.join(plugin_name).with_extension("wasm"))
+            .await?;
         service.configure(&instance.settings(&mut store).await?, use_default)?;
 
-        tracing::info!("service `{identifier}` successfully created");
+        tracing::info!("service '{identifier}' successfully created");
 
         // Insert the service into the config
         config.services.insert(identifier, service);
@@ -205,10 +205,10 @@ impl RemoveService {
 
         // Remove service from configuation
         if config.services.remove_entry(&identifier).is_none() {
-            anyhow::bail!("service `{}` not found", &identifier)
+            anyhow::bail!("service '{}' not found", &identifier)
         }
 
-        tracing::info!("service `{identifier}` successfully removed");
+        tracing::info!("service '{identifier}' successfully removed");
 
         // Save changes
         config.save_config(None)
@@ -252,15 +252,22 @@ impl ConfigureService {
         let service = config
             .services
             .get_mut(&identifier)
-            .ok_or_else(|| anyhow::anyhow!("service `{}` not found", &identifier))?;
+            .ok_or_else(|| anyhow::anyhow!("service '{}' not found", &identifier))?;
+
+        // Get plugins directory
+        let plugins_dir =
+            path::PathBuf::from(config.core.base_dir.as_deref().unwrap_or(LGC_BASE_DIR))
+                .join("plugins");
 
         // Load plugin
-        let (instance, mut store) = PluginManager::new()?.load_plugin(&service.plugin).await?;
+        let (instance, mut store) = PluginManager::new()?
+            .load_plugin(plugins_dir.join(&service.plugin).with_extension("wasm"))
+            .await?;
 
         // Start plugin's service configuration
         service.configure(&instance.settings(&mut store).await?, false)?;
 
-        tracing::info!("service `{identifier}` configured");
+        tracing::info!("service '{identifier}' configured");
 
         config.save_config(None)
     }

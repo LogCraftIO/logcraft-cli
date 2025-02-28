@@ -15,7 +15,7 @@ fn init_default_command_without_create() -> Result<()> {
     let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
 
     env.session
-        .exp_string(&format!("`{}` saved", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
 
     let config_file = temp_dir.join(LGC_CONFIG_PATH);
     common::assert_file_exists(&config_file, true, "Expected the config file to be created");
@@ -24,7 +24,7 @@ fn init_default_command_without_create() -> Result<()> {
     common::assert_file_exists(
         &workspace_dir,
         false,
-        "Workspace should not exist if `--create` was not given",
+        "Workspace should not exist if '--create' was not given",
     );
 
     Ok(())
@@ -37,11 +37,11 @@ fn init_default_command_with_create() -> Result<()> {
     let mut env = common::TestingEnv::init(false, &temp_dir, None, true)?;
 
     env.session.exp_string(&format!(
-        "workspace directory `{}` created",
+        "workspace directory '{}' created",
         common::DEFAULT_WORKSPACE
     ))?;
     env.session
-        .exp_string(&format!("`{}` saved", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
 
     let workspace_dir = temp_dir.join(common::DEFAULT_WORKSPACE);
     common::assert_file_exists(&workspace_dir, true, "Expected workspace to be created");
@@ -63,9 +63,9 @@ fn init_custom_root_and_workspace() -> Result<()> {
     let mut env = common::TestingEnv::init(false, &root_dir, Some("custom_workspace"), true)?;
 
     env.session
-        .exp_string("workspace directory `custom_workspace` created")?;
+        .exp_string("workspace directory 'custom_workspace' created")?;
     env.session
-        .exp_string(&format!("`{}` saved", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
 
     Ok(())
 }
@@ -84,7 +84,7 @@ fn init_workspace_conflict() -> Result<()> {
     assert!(workspace_dir.exists(), "Expected workspace to exist");
 
     env.session.exp_string(&format!(
-        "workspace directory `{}` already exists",
+        "workspace directory '{}' already exists",
         common::DEFAULT_WORKSPACE
     ))?;
 
@@ -110,7 +110,7 @@ fn init_config_conflict() -> Result<()> {
     assert!(config_file.exists(), "Expected the config file to exist");
 
     env.session
-        .exp_string(&format!("`{}` already exists", LGC_CONFIG_PATH))?;
+        .exp_string(&format!("{} already exists", LGC_CONFIG_PATH))?;
 
     let workspace_dir = temp_dir.join(common::DEFAULT_WORKSPACE);
     common::assert_file_exists(&workspace_dir, false, "Expected workspace to be missing");
@@ -128,7 +128,7 @@ fn init_invalid_root() -> Result<()> {
 
     let mut env = common::TestingEnv::init(false, &invalid_root, None, false)?;
     env.session.exp_string(&format!(
-        "`{}` is not a directory",
+        "'{}' is not a directory",
         invalid_root
             .to_str()
             .expect("Failed to convert invalid root path to string")
@@ -145,7 +145,7 @@ fn init_missing_root() -> Result<()> {
     let mut env = common::TestingEnv::init(false, missing_root, None, false)?;
 
     env.session
-        .exp_regex(&format!("`{}` does not exist", missing_root.display()))?;
+        .exp_regex(&format!("'{}' does not exist", missing_root.display()))?;
 
     Ok(())
 }

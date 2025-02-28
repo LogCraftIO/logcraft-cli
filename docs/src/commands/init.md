@@ -4,7 +4,7 @@ This command helps you kickstart the project by creating the base configuration 
 
 ```bash
 % lgc init
-INFO `lgc.toml` saved
+INFO lgc.toml saved
 % ls -1
 lgc.toml
 %
@@ -16,7 +16,7 @@ If a `lgc.toml` already exists, the command fails.
 
 ```bash
 % lgc init
-ERROR `lgc.toml` already exists
+ERROR lgc.toml already exists
 %
 ```
 
@@ -34,7 +34,7 @@ The following example initialize the configuration in the directory `/foo/bar`
 
 ```bash
 % lgc init --root /foo/bar
-INFO `lgc.toml` saved
+INFO lgc.toml saved
 % ls -1 /foo/bar
 lgc.toml
 %
@@ -44,7 +44,7 @@ If the provided path doesn't exist, an error is thrown.
 
 ```bash
 % lgc init --root /foo/baz
-ERROR directory `/foo/baz` does not exist
+ERROR directory '/foo/baz' does not exist
 %
 ```
 
@@ -58,7 +58,7 @@ This parameter allows defining the base directory in which detections are stored
 
 ```bash
 % lgc init --root /foo/bar --workspace 'my-rules'
-INFO `lgc.toml` saved
+INFO lgc.toml saved
 % ls -1 /foo/bar
 lgc.toml
 % cat /foo/bar/lgc.toml | grep workspace
@@ -76,8 +76,8 @@ When this parameter is specified, lgc creates the workspace in the root director
 
 ```bash
 % lgc init --create
-INFO workspace directory `rules` created
-INFO `lgc.toml` saved
+INFO workspace directory 'rules' created
+INFO lgc.toml saved
 % ls -1
 lgc.toml
 rules/
@@ -88,6 +88,6 @@ If a directory of the same name already exists, an error is thrown.
 
 ```bash
 % lgc init --create
-ERROR workspace directory `rules` already exists
+ERROR workspace directory 'rules' already exists
 %
 ```

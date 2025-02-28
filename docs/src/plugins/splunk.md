@@ -159,7 +159,7 @@ Output
 
 ```bash
 % lgc validate
-ERROR validation failed on `rules/splunk/my-detection.yaml`, field: `parameters.disabled', error: invalid type: string "hello", expected a boolean
+ERROR validation failed on 'rules/splunk/my-detection.yaml', field: 'parameters.disabled', error: invalid type: string "hello", expected a boolean
 %
 ```
 
@@ -179,7 +179,7 @@ Output
 
 ```bash
 % lgc validate
-ERROR validation failed on `rules/splunk/my-detection.yaml`, field: `search`, error: invalid type: boolean `true`, expected a string
+ERROR validation failed on 'rules/splunk/my-detection.yaml', field: 'search', error: invalid type: boolean `true`, expected a string
 %
 ```
 
@@ -200,7 +200,7 @@ Output
 
 ```bash
 % lgc validate
-ERROR validation failed on `rules/splunk/high-entropy-domain.yaml`, field: `parameters.dispatchAs`, error: unknown variant `bob`, expected `owner` or `user`
+ERROR validation failed on 'rules/splunk/high-entropy-domain.yaml', field: 'parameters.dispatchAs', error: unknown variant `bob`, expected `owner` or `user`
 %
 ```
 

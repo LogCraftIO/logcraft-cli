@@ -43,9 +43,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # Set tags value
-      - name: Set tags value
-        id: set-tags
-        run: echo "tags=$(echo ${{ github.ref_name }} | grep -oP '(?<=lgc/).*' || echo ${{ github.ref_name }})" >> $GITHUB_ENV
+      - name: Set tag value
+        id: set-tag
+        run: echo "tag=$(echo ${{ github.ref_name }} | grep -oP '(?<=lgc/).*')" >> $GITHUB_ENV
 
       # Extract metadata (tags, labels) for Docker
       - name: Extract Docker metadata
@@ -53,7 +53,7 @@ jobs:
         uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: ${{ steps.set-tags.outputs.tags }}
+          tags: ${{ steps.set-tag.outputs.tag }}
 
       # Build and push Docker image with Buildx (don't push on PR)
       - name: Build and push Docker image

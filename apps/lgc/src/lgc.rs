@@ -19,7 +19,7 @@ async fn main() {
 }
 
 const HELP_TEMPLATE: &str = r#"
-{before-help}{about} {version}
+{before-help}{name} {version}
 
 {usage-heading} {usage}
 
@@ -28,7 +28,11 @@ const HELP_TEMPLATE: &str = r#"
 
 /// LogCraft CLI
 #[derive(clap::Parser)]
-#[clap(name="LogCraft", help_template=HELP_TEMPLATE, version=clap::crate_version!())]
+#[clap(
+    name="LogCraft CLI",
+    help_template=HELP_TEMPLATE,
+    version=concat!("v", env!("CARGO_PKG_VERSION")
+))]
 struct LogCraftCli {
     #[clap(subcommand)]
     commands: LogCraftCommands,
@@ -119,7 +123,9 @@ impl LogCraftCli {
                         }
                     };
                 } else {
-                    tracing::error!("unable to find configuration file, run `lgc init` to initialize a new project");
+                    tracing::error!(
+                        "no configuration file, run 'lgc init' to initialize a new project"
+                    );
                     std::process::exit(1)
                 }
             }

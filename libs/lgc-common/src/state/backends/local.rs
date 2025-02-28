@@ -59,10 +59,18 @@ impl BackendActions for LocalBackend {
                 self.path.display()
             )
         })?;
+
+        // Create parent directories if they don't exist.
+        if let Some(parent) = self.path.parent() {
+            fs::create_dir_all(parent).await.with_context(|| {
+                format!("unable to create directories for {}", parent.display())
+            })?;
+        }
+
+        // Write the state to disk.
         fs::write(&self.path, contents)
             .await
-            .with_context(|| format!("unable to write state file: {}", self.path.display()))?;
-        Ok(())
+            .with_context(|| format!("unable to write state file: {}", self.path.display()))
     }
 
     /// Locks the state.
