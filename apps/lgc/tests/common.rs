@@ -56,7 +56,8 @@ impl TestingEnv {
     }
 
     pub fn init_success(mut self) -> Result<Self> {
-        self.session.exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+        self.session
+            .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
         Ok(self)
     }
 

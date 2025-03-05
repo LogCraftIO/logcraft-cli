@@ -60,10 +60,7 @@ impl Policy {
     }
 
     /// Builds the leaf schema for a given policy.
-    fn build_leaf_schema(
-        &self,
-        enforced_type: Option<&str>,
-    ) -> Result<Value, &str> {
+    fn build_leaf_schema(&self, enforced_type: Option<&str>) -> Result<Value, &str> {
         let ignore = self.ignorecase.unwrap_or(false);
         let mut leaf_schema = if let Some(t) = enforced_type {
             json!({ "type": t })
@@ -94,13 +91,13 @@ impl Policy {
                                 leaf_schema["minLength"] = json!(min);
                                 leaf_schema["maxLength"] = json!(max);
                             }
-                        },
+                        }
                         (Some(min), None) => {
                             leaf_schema["minLength"] = json!(min);
-                        },
+                        }
                         (None, Some(max)) => {
                             leaf_schema["maxLength"] = json!(max);
-                        },
+                        }
                         _ => {}
                     }
                     if let Some(ref vals) = cons.values {
