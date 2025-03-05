@@ -8,6 +8,8 @@ use lgc_common::{
     plugins::manager::{PluginActions, PluginManager},
 };
 
+use lgc_policies::Severity;
+
 /// Validate detection rules
 #[derive(clap::Parser)]
 #[clap(about = "Validate local detection rules", allow_hyphen_values = true)]
@@ -24,6 +26,40 @@ impl ValidateCommand {
         if detections.is_empty() {
             anyhow::bail!("nothing to validate, no detection found.");
         }
+
+        // Load policies
+        for (plugin, detections) in &detections {
+            for (policy_path, policy) in config.read_plugin_policies(plugin)? {
+                let validator = jsonschema::Validator::new(&policy.to_schema())?;
+
+                for (detection_path, content) in &detections.detections {
+                    let val: serde_json::Value = serde_json::from_slice(content)?;
+                    match validator.validate(&val) {
+                        Ok(_) => (),
+                        Err(_) => match policy.severity {
+                            Severity::Error => {
+                                tracing::error!(
+                                    "{} (policy: {}, detection: {})",
+                                    policy.default_message(),
+                                    policy_path,
+                                    detection_path
+                                );
+                            }
+                            Severity::Warning => {
+                                tracing::warn!(
+                                    "{} (policy: {}, detection: {})",
+                                    policy.default_message(),
+                                    policy_path,
+                                    detection_path
+                                );
+                            }
+                        },
+                    }
+                }
+            }
+        }
+
+        // Validate detections against policies
 
         // Prepare plugin manager and tasks JoinSet.
         let plugin_manager = PluginManager::new()?;

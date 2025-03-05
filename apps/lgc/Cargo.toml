@@ -14,6 +14,7 @@ openssl = { version = "0.10", features = ["vendored"] }
 [dependencies]
 # Local dependencies
 lgc-common.workspace = true
+lgc-policies.workspace = true
 
 # Utils
 tracing.workspace = true
