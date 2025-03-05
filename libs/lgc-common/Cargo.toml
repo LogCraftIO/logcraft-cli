@@ -8,6 +8,7 @@ repository.workspace = true
 [dependencies]
 # Local dependencies
 lgc-runtime.workspace = true
+lgc-policies.workspace = true
 
 # Utils
 tracing.workspace = true

@@ -8,6 +8,7 @@ use std::{
 };
 
 use anyhow::{bail, Context};
+use lgc_policies::Policy;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
@@ -15,6 +16,7 @@ use crate::state::backends::StateBackend;
 
 pub const LGC_CONFIG_PATH: &str = "lgc.toml";
 pub const LGC_RULES_DIR: &str = "rules";
+pub const LGC_POLICIES_DIR: &str = "policies";
 pub const LGC_BASE_DIR: &str = "/opt/logcraft-cli";
 
 #[derive(Serialize, Deserialize, Default, Clone)]
@@ -199,6 +201,38 @@ impl ProjectConfiguration {
         }
 
         Ok(file_contents)
+    }
+
+    /// Reads all files under `<policies>/<plugin_name>` and returns a concatenated policy.
+    pub fn read_plugin_policies(&self, plugin_name: &str) -> anyhow::Result<Vec<(String, Policy)>> {
+        let policies_path = path::Path::new(LGC_POLICIES_DIR).join(plugin_name);
+
+        // Create an empty JSON object to store the policies
+        let mut policies = vec![];
+
+        // Check if the directory exists and is indeed a directory
+        if !policies_path.is_dir() {
+            tracing::warn!("no policies for plugin: {}", policies_path.display());
+            return Ok(policies);
+        }
+
+        // Collect policy files
+        for entry in fs::read_dir(&policies_path)? {
+            let entry = entry?;
+            let path = entry.path();
+
+            if let Some(ext) = path.extension() {
+                if ext != "yml" || ext != "yaml" {
+                    policies.push((
+                        path.display().to_string(),
+                        serde_yaml_ng::from_slice::<Policy>(&fs::read(&path)?)
+                            .with_context(|| format!("failed to read policy file: {:?}", path))?,
+                    ));
+                }
+            }
+        }
+
+        Ok(policies)
     }
 }
 
