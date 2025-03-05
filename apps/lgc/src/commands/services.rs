@@ -62,11 +62,25 @@ impl CreateService {
             path::PathBuf::from(config.core.base_dir.as_deref().unwrap_or(LGC_BASE_DIR))
                 .join("plugins");
 
+        // Prompt theme for interactive mode
+        let prompt_theme = dialoguer::theme::ColorfulTheme::default();
+        
+        // Prompt for service identifier if not provided
+        let identifier: String = ensure_kebab_case(match self.identifier {
+            Some(id) => id,
+            None => dialoguer::Input::<String>::with_theme(&prompt_theme)
+                .with_prompt("Service identifier:")
+                .interact_text()?,
+        })?;
+
+        // Check if service already exists
+        if config.services.contains_key(&identifier) {
+            anyhow::bail!("identifier '{identifier}' is already defined");
+        }
+
         // Start plugin manager and retrieve plugin names
         let plugin_manager = PluginManager::new()?;
         let plugin_names = plugin_manager.plugin_names(&plugins_dir)?;
-        // Prompt theme for interactive mode
-        let prompt_theme = dialoguer::theme::ColorfulTheme::default();
 
         // Determine plugin_name as an owned String
         let plugin_name: String = match self.plugin {
@@ -91,19 +105,6 @@ impl CreateService {
                 }
             }
         };
-
-        // Prompt for service identifier if not provided
-        let identifier: String = ensure_kebab_case(match self.identifier {
-            Some(id) => id,
-            None => dialoguer::Input::<String>::with_theme(&prompt_theme)
-                .with_prompt("Service identifier:")
-                .interact_text()?,
-        })?;
-
-        // Check if service already exists
-        if config.services.contains_key(&identifier) {
-            anyhow::bail!("identifier '{identifier}' is already defined");
-        }
 
         // Prompt for environment name if not provided
         let environment = match self.env {
