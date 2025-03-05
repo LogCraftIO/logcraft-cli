@@ -8,7 +8,7 @@ use std::{
 };
 
 use anyhow::{bail, Context};
-use lgc_policies::Policy;
+use lgc_policies::policy::Policy;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
@@ -16,7 +16,7 @@ use crate::state::backends::StateBackend;
 
 pub const LGC_CONFIG_PATH: &str = "lgc.toml";
 pub const LGC_RULES_DIR: &str = "rules";
-pub const LGC_POLICIES_DIR: &str = "policies";
+pub const LGC_POLICIES_DIR: &str = ".logcraft/policies";
 pub const LGC_BASE_DIR: &str = "/opt/logcraft-cli";
 
 #[derive(Serialize, Deserialize, Default, Clone)]
@@ -40,14 +40,6 @@ impl Default for CoreConfiguration {
             workspace: String::from("rules"),
         }
     }
-}
-
-#[derive(Clone, Debug)]
-pub struct DetectionContext {
-    // Tuple of (service_name, serialized configuration)
-    pub services: Vec<(String, Vec<u8>)>,
-    // List of related detections
-    pub detections: HashMap<String, Vec<u8>>,
 }
 
 impl ProjectConfiguration {
@@ -212,7 +204,6 @@ impl ProjectConfiguration {
 
         // Check if the directory exists and is indeed a directory
         if !policies_path.is_dir() {
-            tracing::warn!("no policies for plugin: {}", policies_path.display());
             return Ok(policies);
         }
 
@@ -226,13 +217,27 @@ impl ProjectConfiguration {
                     policies.push((
                         path.display().to_string(),
                         serde_yaml_ng::from_slice::<Policy>(&fs::read(&path)?)
-                            .with_context(|| format!("failed to read policy file: {:?}", path))?,
+                            .with_context(|| format!("malformed policy: {:?}", path))?,
                     ));
                 }
             }
         }
 
         Ok(policies)
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct DetectionContext {
+    // Tuple of (service_name, serialized configuration)
+    pub services: Vec<(String, Vec<u8>)>,
+    // List of related detections
+    pub detections: HashMap<String, Vec<u8>>,
+}
+
+impl AsRef<DetectionContext> for DetectionContext {
+    fn as_ref(&self) -> &DetectionContext {
+        self
     }
 }
 

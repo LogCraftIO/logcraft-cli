@@ -3,11 +3,12 @@
 
 use dialoguer::Confirm;
 use lgc_common::{
-    configuration::{self, DetectionContext, LGC_BASE_DIR},
+    configuration::{self, DetectionContext},
     diff::{BOLD_STYLE, REMOVE_STYLE},
     plugins::manager::{PluginActions, PluginManager},
+    utils::filter_missing_plugins,
 };
-use std::{collections::HashMap, path};
+use std::collections::HashMap;
 use tokio::task::JoinSet;
 
 #[derive(clap::Parser)]
@@ -100,10 +101,12 @@ impl DestroyCommand {
             }
         }
 
-        // Retrieve plugin directory
-        let plugins_dir =
-            path::PathBuf::from(config.core.base_dir.as_deref().unwrap_or(LGC_BASE_DIR))
-                .join("plugins");
+        // Retrieve plugin directory and filter out plugins that do not exist.
+        let plugins_dir = filter_missing_plugins(
+            config.core.base_dir,
+            &config.core.workspace,
+            &mut detections,
+        );
 
         // Sync remote detection state.
         let plugin_manager = PluginManager::new()?;
