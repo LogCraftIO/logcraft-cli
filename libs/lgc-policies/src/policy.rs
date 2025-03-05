@@ -15,7 +15,7 @@ pub struct Policy {
     /// Custom error message. May contain the placeholder `${fieldName}`.
     pub message: Option<String>,
     /// Whether matching is case-insensitive (default is false).
-    pub ignore_case: Option<bool>,
+    pub ignorecase: Option<bool>,
     /// Pattern checks.
     /// jsonschema uses ECMA 262 regex.
     /// [information](https://json-schema.org/understanding-json-schema/reference/regular_expressions)
