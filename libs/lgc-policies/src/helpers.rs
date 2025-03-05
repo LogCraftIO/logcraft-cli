@@ -12,7 +12,7 @@ pub(crate) fn parse_field(field: &str) -> Vec<&str> {
     }
 }
 
-/// Builds a nested JSON Schema using an iterator fold.
+/// Builds a nested JSON Schema.
 pub(crate) fn build_nested(parts: &[&str], leaf: Value) -> Value {
     parts.iter().rev().fold(leaf, |acc, &part| {
         json!({

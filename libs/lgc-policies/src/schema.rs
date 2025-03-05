@@ -51,7 +51,11 @@ impl Policy {
     }
 
     /// Builds the leaf schema for a given policy.
-    fn build_leaf_schema(&self, leaf_field: &str, enforced_type: Option<&str>) -> Result<Value, &str> {
+    fn build_leaf_schema(
+        &self,
+        leaf_field: &str,
+        enforced_type: Option<&str>,
+    ) -> Result<Value, &str> {
         let ignore = self.ignorecase.unwrap_or(false);
         let mut leaf_schema = if let Some(t) = enforced_type {
             json!({ "type": t })

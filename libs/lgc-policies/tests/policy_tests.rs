@@ -14,9 +14,9 @@ pub fn validate_sample_yaml(policy: &Policy, sample_yaml: &str) -> bool {
         Err(e) => {
             println!("Failed to generate schema for policy: {e}");
             return false;
-        },
+        }
     };
-    
+
     jsonschema::validate(&schema, &instance).is_ok()
 }
 
@@ -142,7 +142,7 @@ fn test_constraint_min_length(#[case] sample: &str, #[case] expected: bool) {
         message: None,
         ignorecase: Some(false),
         regex: None,
-        constraints: None
+        constraints: None,
     };
     // Missing constraints specification.
     let result = validate_sample_yaml(&policy, sample);
