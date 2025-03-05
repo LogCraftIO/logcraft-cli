@@ -1,3 +1,6 @@
+// Copyright (c) 2023 LogCraft.io.
+// SPDX-License-Identifier: MPL-2.0
+
 use serde_json::{json, Value};
 
 /// Parses the target field into a list of parts for path composition.
