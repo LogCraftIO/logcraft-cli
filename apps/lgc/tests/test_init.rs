@@ -12,10 +12,7 @@ pub mod common;
 #[test]
 fn init_default_command_without_create() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
-    let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
-
-    env.session
-        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+    common::TestingEnv::init(false, temp_dir.path(), None, false)?.init_success()?;
 
     let config_file = temp_dir.join(LGC_CONFIG_PATH);
     common::assert_file_exists(&config_file, true, "Expected the config file to be created");
@@ -30,7 +27,7 @@ fn init_default_command_without_create() -> Result<()> {
     Ok(())
 }
 
-/// Test that qializing a project with the default configuration and creating the workspace succeeds.
+/// Test that initializing a project with the default configuration and creating the workspace succeeds.
 #[test]
 fn init_default_command_with_create() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
@@ -40,8 +37,7 @@ fn init_default_command_with_create() -> Result<()> {
         "workspace directory '{}' created",
         common::DEFAULT_WORKSPACE
     ))?;
-    env.session
-        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+    env.init_success()?;
 
     let workspace_dir = temp_dir.join(common::DEFAULT_WORKSPACE);
     common::assert_file_exists(&workspace_dir, true, "Expected workspace to be created");
@@ -64,8 +60,7 @@ fn init_custom_root_and_workspace() -> Result<()> {
 
     env.session
         .exp_string("workspace directory 'custom_workspace' created")?;
-    env.session
-        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+    env.init_success()?;
 
     Ok(())
 }

@@ -55,6 +55,11 @@ impl TestingEnv {
         })
     }
 
+    pub fn init_success(mut self) -> Result<Self> {
+        self.session.exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+        Ok(self)
+    }
+
     pub fn setup_plugin(&self) -> Result<()> {
         // Ensure plugin dir exists
         let plugin_dir = self.root_dir.join(".logcraft/plugins");
