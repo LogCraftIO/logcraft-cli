@@ -9,7 +9,15 @@ use serde_json::Value;
 /// generated from a given policy.
 pub fn validate_sample_yaml(policy: &Policy, sample_yaml: &str) -> bool {
     let instance: Value = serde_yaml_ng::from_str(sample_yaml).expect("Invalid YAML");
-    jsonschema::validate(&policy.to_schema(), &instance).is_ok()
+    let schema = match policy.to_schema() {
+        Ok(s) => s,
+        Err(e) => {
+            println!("Failed to generate schema for policy: {e}");
+            return false;
+        },
+    };
+    
+    jsonschema::validate(&schema, &instance).is_ok()
 }
 
 /// Policy produces the correct default error message.
@@ -44,7 +52,7 @@ fn test_default_message(
         check,
         severity,
         message: None,
-        ignore_case: None,
+        ignorecase: None,
         regex: None,
         constraints: None,
     };
@@ -61,13 +69,26 @@ fn test_default_message(
 #[case(r#"title: "MY-123 Title""#, false, true)]
 #[case(r#"title: "My-123 title""#, false, false)]
 #[case(r#"title: "123-my title""#, false, false)]
-fn test_pattern(#[case] sample: &str, #[case] ignore_case: bool, #[case] expected: bool) {
+fn test_pattern(#[case] sample: &str, #[case] ignorecase: bool, #[case] expected: bool) {
     let policy = Policy {
         field: "/title".to_string(),
         check: CheckKind::Pattern,
         severity: Severity::Error,
         message: None, // Use default message.
-        ignore_case: Some(ignore_case),
+        ignorecase: Some(ignorecase),
+        regex: None,
+        constraints: None,
+    };
+    // Missing regex.
+    let result = validate_sample_yaml(&policy, sample);
+    assert!(!result);
+
+    let policy = Policy {
+        field: "/title".to_string(),
+        check: CheckKind::Pattern,
+        severity: Severity::Error,
+        message: None, // Use default message.
+        ignorecase: Some(ignorecase),
         regex: Some(r"^[A-Z]+-\d+\s\S+".to_string()),
         constraints: None,
     };
@@ -85,7 +106,7 @@ fn test_existence(#[case] sample: &str, #[case] expected: bool) {
         check: CheckKind::Existence,
         severity: Severity::Error,
         message: None,
-        ignore_case: Some(false),
+        ignorecase: Some(false),
         regex: None,
         constraints: None,
     };
@@ -102,7 +123,7 @@ fn test_absence(#[case] sample: &str, #[case] expected: bool) {
         check: CheckKind::Absence,
         severity: Severity::Warning,
         message: None,
-        ignore_case: Some(false),
+        ignorecase: Some(false),
         regex: None,
         constraints: None,
     };
@@ -119,7 +140,20 @@ fn test_constraint_min_length(#[case] sample: &str, #[case] expected: bool) {
         check: CheckKind::Constraint,
         severity: Severity::Error,
         message: None,
-        ignore_case: Some(false),
+        ignorecase: Some(false),
+        regex: None,
+        constraints: None
+    };
+    // Missing constraints specification.
+    let result = validate_sample_yaml(&policy, sample);
+    assert!(!result);
+
+    let policy = Policy {
+        field: "/name".to_string(),
+        check: CheckKind::Constraint,
+        severity: Severity::Error,
+        message: None,
+        ignorecase: Some(false),
         regex: None,
         constraints: Some(Constraint {
             min_length: Some(5),
@@ -140,7 +174,7 @@ fn test_constraint_max_length(#[case] sample: &str, #[case] expected: bool) {
         check: CheckKind::Constraint,
         severity: Severity::Error,
         message: None,
-        ignore_case: Some(false),
+        ignorecase: Some(false),
         regex: None,
         constraints: Some(Constraint {
             min_length: None,
@@ -162,13 +196,13 @@ fn test_constraint_max_length(#[case] sample: &str, #[case] expected: bool) {
 #[case(r#"color: "ReD""#, false, false)]
 #[case(r#"color: "yellow""#, false, false)]
 #[case(r#"color: "YELLOW""#, false, false)]
-fn test_constraint_one_of(#[case] sample: &str, #[case] ignore_case: bool, #[case] expected: bool) {
+fn test_constraint_one_of(#[case] sample: &str, #[case] ignorecase: bool, #[case] expected: bool) {
     let policy = Policy {
         field: "/color".to_string(),
         check: CheckKind::Constraint,
         severity: Severity::Warning,
         message: None,
-        ignore_case: Some(ignore_case),
+        ignorecase: Some(ignorecase),
         regex: None,
         constraints: Some(Constraint {
             min_length: None,
@@ -203,7 +237,7 @@ fn test_nested_pattern(#[case] sample: &str, #[case] expected: bool) {
         check: CheckKind::Pattern,
         severity: Severity::Error,
         message: Some("Email format invalid".to_string()),
-        ignore_case: Some(false),
+        ignorecase: Some(false),
         regex: Some(r"^\S+@\S+\.\S+$".to_string()),
         constraints: None,
     };
@@ -228,7 +262,7 @@ fn test_dot_notation_existence(#[case] sample: &str, #[case] expected: bool) {
         check: CheckKind::Existence,
         severity: Severity::Error,
         message: Some("User name must be present".to_string()),
-        ignore_case: Some(false),
+        ignorecase: Some(false),
         regex: None,
         constraints: None,
     };

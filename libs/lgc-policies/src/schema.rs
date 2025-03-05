@@ -9,7 +9,7 @@ use serde_json::{json, Value};
 
 impl Policy {
     /// Generates a JSON Schema for a given policy.
-    pub fn to_schema(&self) -> Value {
+    pub fn to_schema(&self) -> Result<Value, &str> {
         let mut schema = json!({
             "$schema": "http://json-schema.org/draft-07/schema#",
             "type": "object",
@@ -25,7 +25,7 @@ impl Policy {
             _ => None,
         };
 
-        let leaf_schema = self.build_leaf_schema(&leaf_field, enforced_type);
+        let leaf_schema = self.build_leaf_schema(&leaf_field, enforced_type)?;
 
         match parts.as_slice() {
             [] => schema["properties"] = json!({}),
@@ -47,12 +47,12 @@ impl Policy {
                 }
             }
         }
-        schema
+        Ok(schema)
     }
 
     /// Builds the leaf schema for a given policy.
-    fn build_leaf_schema(&self, leaf_field: &str, enforced_type: Option<&str>) -> Value {
-        let ignore = self.ignore_case.unwrap_or(false);
+    fn build_leaf_schema(&self, leaf_field: &str, enforced_type: Option<&str>) -> Result<Value, &str> {
+        let ignore = self.ignorecase.unwrap_or(false);
         let mut leaf_schema = if let Some(t) = enforced_type {
             json!({ "type": t })
         } else {
@@ -79,6 +79,8 @@ impl Policy {
                         regex.clone()
                     };
                     leaf_schema["pattern"] = json!(pattern);
+                } else {
+                    return Err("pattern check requires a regex.");
                 }
             }
             CheckKind::Constraint => {
@@ -97,10 +99,12 @@ impl Policy {
                             leaf_schema["enum"] = json!(vals);
                         }
                     }
+                } else {
+                    return Err("constraint check requires constraints to be defined.");
                 }
             }
             _ => {}
         }
-        leaf_schema
+        Ok(leaf_schema)
     }
 }
