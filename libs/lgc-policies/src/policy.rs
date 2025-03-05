@@ -37,7 +37,9 @@ pub enum CheckKind {
 /// Constraint parameters for the "constraint" check.
 #[derive(Debug, Deserialize)]
 pub struct Constraint {
+    #[serde(rename = "minLength")]
     pub min_length: Option<usize>,
+    #[serde(rename = "maxLength")]
     pub max_length: Option<usize>,
     /// Optional list of allowed values.
     pub values: Option<Vec<String>>,
