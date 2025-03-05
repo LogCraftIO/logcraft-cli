@@ -64,7 +64,7 @@ impl CreateService {
 
         // Prompt theme for interactive mode
         let prompt_theme = dialoguer::theme::ColorfulTheme::default();
-        
+
         // Prompt for service identifier if not provided
         let identifier: String = ensure_kebab_case(match self.identifier {
             Some(id) => id,
