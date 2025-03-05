@@ -27,6 +27,7 @@ export default defineConfig({
           { text: "Detections", link: "/concepts/detections" },
           { text: "Identifiers", link: "/concepts/identifiers" },
           { text: "Plugins", link: "/concepts/plugins" },
+          { text: "Policies", link: "/concepts/policies" },
         ],
       },
       {
