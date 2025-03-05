@@ -42,11 +42,7 @@ impl ValidateCommand {
                     .map_err(|e| anyhow::anyhow!("incorrect policy '{policy_path}': {e}"))?;
 
                 let validator = jsonschema::Validator::new(&schema)?;
-                let message = if let Some(message) = &policy.message {
-                    message
-                } else {
-                    &policy.default_message()
-                };
+                let message = schema["x-message"].as_str().unwrap_or("missing message in schema");
 
                 // Validate detections against policies
                 for (detection_path, content) in &detections.detections {
