@@ -23,6 +23,7 @@ strip = true
 lgc = { path = "apps/lgc" }
 lgc-common = { path = "libs/lgc-common" }
 lgc-runtime = { path = "libs/lgc-runtime" }
+lgc-policies = { path = "libs/lgc-policies" }
 
 # Utils
 anyhow = "1.0"
