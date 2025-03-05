@@ -7,17 +7,26 @@ use super::{
 };
 use serde_json::{json, Value};
 
+const FIELD_PARAM: &str = "${fieldName}";
+
 impl Policy {
     /// Generates a JSON Schema for a given policy.
     pub fn to_schema(&self) -> Result<Value, &str> {
+        // Use default message if no custom message is provided.
+        let msg = if let Some(ref m) = self.message {
+            m.replace(FIELD_PARAM, &self.field)
+        } else {
+            self.default_message()
+        };
+
+        // Prepare the schema with the custom message.
         let mut schema = json!({
             "$schema": "http://json-schema.org/draft-07/schema#",
             "type": "object",
-            "x-severity": self.severity.to_string()
+            "x-message": msg,
         });
 
         let parts = helpers::parse_field(&self.field);
-        let leaf_field = parts.last().unwrap_or(&self.field.as_str()).to_string();
 
         // Enforce string type for Pattern and Constraint checks.
         let enforced_type = match self.check {
@@ -25,8 +34,8 @@ impl Policy {
             _ => None,
         };
 
-        let leaf_schema = self.build_leaf_schema(&leaf_field, enforced_type)?;
-
+        // Build the schema based on the check kind.
+        let leaf_schema = self.build_leaf_schema(enforced_type)?;
         match parts.as_slice() {
             [] => schema["properties"] = json!({}),
             [field] => match self.check {
@@ -53,7 +62,6 @@ impl Policy {
     /// Builds the leaf schema for a given policy.
     fn build_leaf_schema(
         &self,
-        leaf_field: &str,
         enforced_type: Option<&str>,
     ) -> Result<Value, &str> {
         let ignore = self.ignorecase.unwrap_or(false);
@@ -62,17 +70,6 @@ impl Policy {
         } else {
             json!({})
         };
-
-        if ignore {
-            leaf_schema["x-ignorecase"] = json!(true);
-        }
-        // Use default message if no custom message is provided.
-        let msg = if let Some(ref m) = self.message {
-            m.replace("${fieldName}", leaf_field)
-        } else {
-            self.default_message()
-        };
-        leaf_schema["x-message"] = json!(msg);
 
         match self.check {
             CheckKind::Pattern => {
@@ -89,11 +86,22 @@ impl Policy {
             }
             CheckKind::Constraint => {
                 if let Some(ref cons) = self.constraints {
-                    if let Some(min) = cons.min_length {
-                        leaf_schema["minLength"] = json!(min);
-                    }
-                    if let Some(max) = cons.max_length {
-                        leaf_schema["maxLength"] = json!(max);
+                    match (cons.min_length, cons.max_length) {
+                        (Some(min), Some(max)) => {
+                            if min > max {
+                                return Err("minLength must be less than or equal to maxLength.");
+                            } else {
+                                leaf_schema["minLength"] = json!(min);
+                                leaf_schema["maxLength"] = json!(max);
+                            }
+                        },
+                        (Some(min), None) => {
+                            leaf_schema["minLength"] = json!(min);
+                        },
+                        (None, Some(max)) => {
+                            leaf_schema["maxLength"] = json!(max);
+                        },
+                        _ => {}
                     }
                     if let Some(ref vals) = cons.values {
                         if ignore {
