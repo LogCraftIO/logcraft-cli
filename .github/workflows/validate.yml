@@ -20,5 +20,7 @@ jobs:
       - uses: 'moonrepo/setup-toolchain@v0'
       # Check code formatting
       - run: "moon :format --affected --remote"
+      # Linting with clippy
+      - run: "moon :clippy --affected --remote"
       # Run tests
       - run: "moon :test --affected --remote"

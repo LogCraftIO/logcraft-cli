@@ -6,8 +6,6 @@ use common::{DEFAULT_WORKSPACE, PLUGIN_NAME};
 use rexpect::session::spawn_command;
 use std::process;
 
-use lgc_common::configuration::LGC_CONFIG_PATH;
-
 pub mod common;
 
 const SERVICE_NAME: &str = "my-service";
@@ -46,9 +44,7 @@ const INVALID_SAMPLE_RULE: &str = r#"
 #[test]
 fn test_validate() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
-    let mut env = common::TestingEnv::init(false, temp_dir.path(), None, true)?;
-    env.session
-        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+    let env = common::TestingEnv::init(false, temp_dir.path(), None, true)?.init_success()?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
@@ -105,9 +101,7 @@ fn test_validate() -> Result<()> {
 #[test]
 fn test_validate_empty_rules() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
-    let mut env = common::TestingEnv::init(false, temp_dir.path(), None, true)?;
-    env.session
-        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+    let env = common::TestingEnv::init(false, temp_dir.path(), None, true)?.init_success()?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
@@ -153,9 +147,7 @@ fn test_validate_empty_rules() -> Result<()> {
 #[test]
 fn test_validate_plugin_missing() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
-    let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
-    env.session
-        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+    let env = common::TestingEnv::init(false, temp_dir.path(), None, false)?.init_success()?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
@@ -216,9 +208,7 @@ fn test_validate_plugin_missing() -> Result<()> {
 #[test]
 fn test_validate_incorrect_values() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
-    let mut env = common::TestingEnv::init(false, temp_dir.path(), None, true)?;
-    env.session
-        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+    let env = common::TestingEnv::init(false, temp_dir.path(), None, true)?.init_success()?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;

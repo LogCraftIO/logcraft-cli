@@ -1,0 +1,6 @@
+language: 'rust'
+type: 'library'
+
+project:
+  name: 'lgc-policies'
+  description: 'LogCraft CLI policies library'

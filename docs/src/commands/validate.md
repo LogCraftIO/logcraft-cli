@@ -25,6 +25,10 @@ Both [Splunk](../plugins/splunk#linting) and [Microsoft Sentinel](../plugins/mic
 - For Microsoft Sentinel, the same validation exists, except it is performed on the field `enabled` because the field `disabled` simply doesn't exists.
   :::
 
+::: tip Policies
+The `validate` command also ensures that detection rules comply with internal [policies](../concepts/policies.md).
+:::
+
 ## Options
 
 <!-- vale Google.Headings = NO -->

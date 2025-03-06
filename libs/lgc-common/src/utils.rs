@@ -1,7 +1,11 @@
 // Copyright (c) 2023 LogCraft.io.
 // SPDX-License-Identifier: MPL-2.0
 
+use std::{collections::HashMap, path::PathBuf};
+
 use anyhow::{bail, Result};
+
+use crate::configuration::{DetectionContext, LGC_BASE_DIR};
 
 /// Ensure that a string is in kebab-case format
 pub fn ensure_kebab_case(name: String) -> Result<String> {
@@ -89,4 +93,25 @@ pub fn to_kebab_case(input: &str) -> Result<String, &'static str> {
     }
 
     Ok(kebab)
+}
+
+pub fn filter_missing_plugins<T>(
+    base_dir: Option<String>,
+    workspace: &str,
+    context: &mut HashMap<String, T>,
+) -> PathBuf
+where
+    T: AsRef<DetectionContext>,
+{
+    let plugins_dir = PathBuf::from(base_dir.as_deref().unwrap_or(LGC_BASE_DIR)).join("plugins");
+
+    context.retain(|name, _| {
+        let exists = plugins_dir.join(name).with_extension("wasm").exists();
+        if !exists {
+            tracing::warn!("ignoring '{}/{}' (no matching plugin).", workspace, name);
+        }
+        exists
+    });
+
+    plugins_dir
 }

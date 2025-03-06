@@ -16,9 +16,7 @@ const ENVIRONMENT_NAME: &str = "testing";
 #[test]
 fn service_command_no_project() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
-    let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
-    env.session
-        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+    let env = common::TestingEnv::init(false, temp_dir.path(), None, false)?.init_success()?;
 
     // Remove `lgc.toml` to simulate a project that has not been initialized
     let config_file = temp_dir.path().join(LGC_CONFIG_PATH);
@@ -40,9 +38,7 @@ fn service_command_no_project() -> Result<()> {
 #[test]
 fn service_create_no_configuration() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
-    let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
-    env.session
-        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+    let env = common::TestingEnv::init(false, temp_dir.path(), None, false)?.init_success()?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
@@ -80,9 +76,7 @@ fn service_create_no_configuration() -> Result<()> {
 #[test]
 fn service_create_with_configuration() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
-    let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
-    env.session
-        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+    let env = common::TestingEnv::init(false, temp_dir.path(), None, false)?.init_success()?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
@@ -124,9 +118,7 @@ fn service_create_with_configuration() -> Result<()> {
 #[test]
 fn service_list_empty() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
-    let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
-    env.session
-        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+    let env = common::TestingEnv::init(false, temp_dir.path(), None, false)?.init_success()?;
 
     // List services when none exist
     let mut command = process::Command::new(&env.bin_path);
@@ -143,9 +135,7 @@ fn service_list_empty() -> Result<()> {
 #[test]
 fn service_create_invalid_values() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
-    let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
-    env.session
-        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+    let env = common::TestingEnv::init(false, temp_dir.path(), None, false)?.init_success()?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
@@ -211,9 +201,7 @@ fn service_create_invalid_values() -> Result<()> {
 #[test]
 fn service_list() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
-    let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
-    env.session
-        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+    let env = common::TestingEnv::init(false, temp_dir.path(), None, false)?.init_success()?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
@@ -260,9 +248,7 @@ fn service_list() -> Result<()> {
 #[test]
 fn service_remove() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
-    let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
-    env.session
-        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+    let env = common::TestingEnv::init(false, temp_dir.path(), None, false)?.init_success()?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
@@ -308,9 +294,7 @@ fn service_remove() -> Result<()> {
 #[test]
 fn service_remove_non_existent() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
-    let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
-    env.session
-        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+    let env = common::TestingEnv::init(false, temp_dir.path(), None, false)?.init_success()?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
@@ -356,9 +340,7 @@ fn service_remove_non_existent() -> Result<()> {
 #[test]
 fn service_configure_non_existent() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
-    let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
-    env.session
-        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+    let env = common::TestingEnv::init(false, temp_dir.path(), None, false)?.init_success()?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
@@ -404,9 +386,7 @@ fn service_configure_non_existent() -> Result<()> {
 #[test]
 fn service_configure() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
-    let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
-    env.session
-        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+    let env = common::TestingEnv::init(false, temp_dir.path(), None, false)?.init_success()?;
 
     // Add the sample plugin to the project
     env.setup_plugin()?;
@@ -455,9 +435,7 @@ fn service_configure() -> Result<()> {
 #[test]
 fn service_commands_empty_service_list() -> Result<()> {
     let temp_dir = assert_fs::TempDir::new()?;
-    let mut env = common::TestingEnv::init(false, temp_dir.path(), None, false)?;
-    env.session
-        .exp_string(&format!("{} saved", LGC_CONFIG_PATH))?;
+    let env = common::TestingEnv::init(false, temp_dir.path(), None, false)?.init_success()?;
 
     // Remove a service that does not exist
     let mut command = process::Command::new(&env.bin_path);

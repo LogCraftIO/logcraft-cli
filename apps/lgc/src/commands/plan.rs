@@ -2,17 +2,16 @@
 // SPDX-License-Identifier: MPL-2.0
 
 use lgc_common::{
-    configuration::{self, LGC_BASE_DIR},
+    configuration,
     detections::PluginsDetections,
     diff::{DiffConfig, ADD_STYLE, BOLD_STYLE, MODIFY_STYLE, REMOVE_STYLE},
     plugins::manager::{PluginActions, PluginManager},
+    utils::filter_missing_plugins,
 };
 use serde_json::Value;
-use std::path;
 use std::{
     collections::{self, HashSet},
     io::Write,
-    sync,
 };
 use tokio::task::JoinSet;
 
@@ -38,7 +37,7 @@ pub struct PlanCommand {
 impl PlanCommand {
     pub async fn run(self, config: configuration::ProjectConfiguration) -> anyhow::Result<()> {
         // Load detections from workspace.
-        let mut context = sync::Arc::new(config.load_detections(self.identifier)?);
+        let mut context = config.load_detections(self.identifier)?;
 
         // Exit early if no detections are found.
         if context.is_empty() {
@@ -47,20 +46,7 @@ impl PlanCommand {
 
         // Retrieve plugin directory and filter out plugins that do not exist.
         let plugins_dir =
-            path::PathBuf::from(config.core.base_dir.as_deref().unwrap_or(LGC_BASE_DIR))
-                .join("plugins");
-
-        sync::Arc::make_mut(&mut context).retain(|name, _| {
-            let exists = plugins_dir.join(name).with_extension("wasm").exists();
-            if !exists {
-                tracing::warn!(
-                    "ignoring '{}/{}' (no matching plugin).",
-                    config.core.workspace,
-                    name
-                );
-            }
-            exists
-        });
+            filter_missing_plugins(config.core.base_dir, &config.core.workspace, &mut context);
 
         // Retrieve current state.
         let state_backend = config.state.unwrap_or_default();

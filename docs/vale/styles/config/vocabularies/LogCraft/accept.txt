@@ -34,6 +34,7 @@ string
 Yara
 (?i)wasm
 Wolfi
+camelCase
 
 # Splunk
 savedsearches

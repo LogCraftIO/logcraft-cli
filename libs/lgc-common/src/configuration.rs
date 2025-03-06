@@ -8,6 +8,7 @@ use std::{
 };
 
 use anyhow::{bail, Context};
+use lgc_policies::policy::Policy;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
@@ -15,6 +16,7 @@ use crate::state::backends::StateBackend;
 
 pub const LGC_CONFIG_PATH: &str = "lgc.toml";
 pub const LGC_RULES_DIR: &str = "rules";
+pub const LGC_POLICIES_DIR: &str = ".logcraft/policies";
 pub const LGC_BASE_DIR: &str = "/opt/logcraft-cli";
 
 #[derive(Serialize, Deserialize, Default, Clone)]
@@ -38,14 +40,6 @@ impl Default for CoreConfiguration {
             workspace: String::from("rules"),
         }
     }
-}
-
-#[derive(Clone, Debug)]
-pub struct DetectionContext {
-    // Tuple of (service_name, serialized configuration)
-    pub services: Vec<(String, Vec<u8>)>,
-    // List of related detections
-    pub detections: HashMap<String, Vec<u8>>,
 }
 
 impl ProjectConfiguration {
@@ -199,6 +193,51 @@ impl ProjectConfiguration {
         }
 
         Ok(file_contents)
+    }
+
+    /// Reads all files under `<policies>/<plugin_name>` and returns a concatenated policy.
+    pub fn read_plugin_policies(&self, plugin_name: &str) -> anyhow::Result<Vec<(String, Policy)>> {
+        let policies_path = path::Path::new(LGC_POLICIES_DIR).join(plugin_name);
+
+        // Create an empty JSON object to store the policies
+        let mut policies = vec![];
+
+        // Check if the directory exists and is indeed a directory
+        if !policies_path.is_dir() {
+            return Ok(policies);
+        }
+
+        // Collect policy files
+        for entry in fs::read_dir(&policies_path)? {
+            let entry = entry?;
+            let path = entry.path();
+
+            if let Some(ext) = path.extension() {
+                if ext != "yml" || ext != "yaml" {
+                    policies.push((
+                        path.display().to_string(),
+                        serde_yaml_ng::from_slice::<Policy>(&fs::read(&path)?)
+                            .with_context(|| format!("malformed policy: {:?}", path))?,
+                    ));
+                }
+            }
+        }
+
+        Ok(policies)
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct DetectionContext {
+    // Tuple of (service_name, serialized configuration)
+    pub services: Vec<(String, Vec<u8>)>,
+    // List of related detections
+    pub detections: HashMap<String, Vec<u8>>,
+}
+
+impl AsRef<DetectionContext> for DetectionContext {
+    fn as_ref(&self) -> &DetectionContext {
+        self
     }
 }
 
