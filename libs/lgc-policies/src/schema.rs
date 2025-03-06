@@ -82,7 +82,7 @@ impl Policy {
                 }
             }
             CheckKind::Constraint => {
-                if let Some(ref cons) = self.constraints {
+                if let Some(ref cons) = self.validations {
                     match (cons.min_length, cons.max_length) {
                         (Some(min), Some(max)) => {
                             if min > max {
@@ -109,7 +109,7 @@ impl Policy {
                         }
                     }
                 } else {
-                    return Err("constraint check requires constraints to be defined.");
+                    return Err("constraint check requires validations to be defined.");
                 }
             }
             _ => {}

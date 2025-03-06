@@ -21,7 +21,7 @@ pub struct Policy {
     /// [information](https://json-schema.org/understanding-json-schema/reference/regular_expressions)
     pub regex: Option<String>,
     /// For constraint checks: additional parameters.
-    pub constraints: Option<Constraint>,
+    pub validations: Option<Constraint>,
 }
 
 /// Type of check to perform.

@@ -54,7 +54,7 @@ fn test_default_message(
         message: None,
         ignorecase: None,
         regex: None,
-        constraints: None,
+        validations: None,
     };
     assert_eq!(policy.default_message(), expected);
 }
@@ -77,7 +77,7 @@ fn test_pattern(#[case] sample: &str, #[case] ignorecase: bool, #[case] expected
         message: None, // Use default message.
         ignorecase: Some(ignorecase),
         regex: None,
-        constraints: None,
+        validations: None,
     };
     // Missing regex.
     let result = validate_sample_yaml(&policy, sample);
@@ -90,7 +90,7 @@ fn test_pattern(#[case] sample: &str, #[case] ignorecase: bool, #[case] expected
         message: None, // Use default message.
         ignorecase: Some(ignorecase),
         regex: Some(r"^[A-Z]+-\d+\s\S+".to_string()),
-        constraints: None,
+        validations: None,
     };
     let result = validate_sample_yaml(&policy, sample);
     assert_eq!(result, expected);
@@ -108,7 +108,7 @@ fn test_existence(#[case] sample: &str, #[case] expected: bool) {
         message: None,
         ignorecase: Some(false),
         regex: None,
-        constraints: None,
+        validations: None,
     };
     assert_eq!(validate_sample_yaml(&policy, sample), expected);
 }
@@ -125,7 +125,7 @@ fn test_absence(#[case] sample: &str, #[case] expected: bool) {
         message: None,
         ignorecase: Some(false),
         regex: None,
-        constraints: None,
+        validations: None,
     };
     assert_eq!(validate_sample_yaml(&policy, sample), expected);
 }
@@ -142,7 +142,7 @@ fn test_constraint_min_length(#[case] sample: &str, #[case] expected: bool) {
         message: None,
         ignorecase: Some(false),
         regex: None,
-        constraints: None,
+        validations: None,
     };
     // Missing constraints specification.
     let result = validate_sample_yaml(&policy, sample);
@@ -155,7 +155,7 @@ fn test_constraint_min_length(#[case] sample: &str, #[case] expected: bool) {
         message: None,
         ignorecase: Some(false),
         regex: None,
-        constraints: Some(Constraint {
+        validations: Some(Constraint {
             min_length: Some(5),
             max_length: None,
             values: None,
@@ -176,7 +176,7 @@ fn test_constraint_max_length(#[case] sample: &str, #[case] expected: bool) {
         message: None,
         ignorecase: Some(false),
         regex: None,
-        constraints: Some(Constraint {
+        validations: Some(Constraint {
             min_length: None,
             max_length: Some(5),
             values: None,
@@ -204,7 +204,7 @@ fn test_constraint_one_of(#[case] sample: &str, #[case] ignorecase: bool, #[case
         message: None,
         ignorecase: Some(ignorecase),
         regex: None,
-        constraints: Some(Constraint {
+        validations: Some(Constraint {
             min_length: None,
             max_length: None,
             values: Some(vec![
@@ -239,7 +239,7 @@ fn test_nested_pattern(#[case] sample: &str, #[case] expected: bool) {
         message: Some("Email format invalid".to_string()),
         ignorecase: Some(false),
         regex: Some(r"^\S+@\S+\.\S+$".to_string()),
-        constraints: None,
+        validations: None,
     };
     assert_eq!(validate_sample_yaml(&policy, sample), expected);
 }
@@ -264,7 +264,7 @@ fn test_dot_notation_existence(#[case] sample: &str, #[case] expected: bool) {
         message: Some("User name must be present".to_string()),
         ignorecase: Some(false),
         regex: None,
-        constraints: None,
+        validations: None,
     };
     assert_eq!(validate_sample_yaml(&policy, sample), expected);
 }
