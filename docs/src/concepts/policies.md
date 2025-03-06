@@ -47,12 +47,32 @@ ignorecase: true | false = false # applies to pattern and constraint
 ## check: pattern
 regex: <pcre>
 ## check: constraint
-constraints:
+validations:
   minLength: int
   maxLength: int
   values:
     - <list of values to match against>
 ```
+
+::: details Common error on heck constraints
+A common error is to define validation constraints as a list instead as unique keys.
+
+**Correct**:
+```yaml
+...
+validations:
+  minLength: int
+  maxLength: int
+```
+
+**Incorrect**:
+```yaml
+...
+validations:
+  - minLength: int
+  - maxLength: int
+```
+:::
 
 ### Option field
 
@@ -88,7 +108,7 @@ This field is applicable to 'pattern' and 'constraint' checks. For example, the 
 
 ```yaml
 ignorecase: true
-constraints:
+validations:
   values:
     - foo
 ```
@@ -171,7 +191,7 @@ The example below ensures that detection titles are at least 10 characters long 
 field: /title
 severity: error
 check: constraint
-constraints:
+validations:
   maxLength: 256
   minLength: 10
 ```
@@ -184,7 +204,7 @@ The example below ensures that the parameter 'foo' is one of the specified value
 field: /parameters/foo
 severity: error
 check: constraint
-constraints:
+validations:
   values:
     - bar
     - baz
