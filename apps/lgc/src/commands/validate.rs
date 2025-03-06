@@ -31,9 +31,16 @@ impl ValidateCommand {
         for (plugin, detections) in &detections {
             // Load policies per plugin
             let policies = config.read_plugin_policies(plugin)?;
-            if policies.is_empty() && !self.quiet {
-                tracing::info!("0 policies loaded for plugin '{plugin}'.");
-                continue;
+            if !self.quiet {
+                let spelling = match policies.len() {
+                    0 | 1 => "policy",
+                    _ => "policies",
+                };
+                tracing::info!(
+                    "{} {} loaded for plugin '{plugin}'.",
+                    policies.len(),
+                    spelling
+                );
             }
 
             for (policy_path, policy) in policies {
