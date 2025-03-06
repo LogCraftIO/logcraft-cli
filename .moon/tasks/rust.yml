@@ -10,6 +10,8 @@ tasks:
     command: 'cargo fmt --all -- --check'
   test:
     command: 'cargo test'
+  clippy:
+    command: 'cargo clippy'
   check:
     command: 'cargo check'
   run:
