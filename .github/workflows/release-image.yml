@@ -54,7 +54,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=semver,pattern={{version}},value=v${{ steps.set-tag.outputs.tag }}
+            type=semver,pattern={{version}},value=${{ steps.set-tag.outputs.tag }}
 
       # Build and push Docker image with Buildx (don't push on PR)
       - name: Build and push Docker image
