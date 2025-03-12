@@ -44,5 +44,5 @@ WORKDIR /srv/workspace
 
 # Copy artifacts from the builder stage using the variable
 COPY --from=builder /build/target/release/lgc ${LOGCRAFT_DIR}/lgc
-COPY --from=builder /build/target/wasm32-wasip2/release/splunk.wasm ${LOGCRAFT_DIR}/plugins/splunk
-COPY --from=builder /build/target/wasm32-wasip2/release/sentinel.wasm ${LOGCRAFT_DIR}/plugins/sentinel
+COPY --from=builder /build/target/wasm32-wasip2/release/splunk.wasm ${LOGCRAFT_DIR}/plugins/splunk.wasm
+COPY --from=builder /build/target/wasm32-wasip2/release/sentinel.wasm ${LOGCRAFT_DIR}/plugins/sentinel.wasm
