@@ -56,3 +56,5 @@ jobs:
             releases/lgc-minimal-${{ steps.toLowerCase.outputs.osLowercase }}-${{ steps.toLowerCase.outputs.archLowercase }}.tar.gz
             releases/lgc-minimal-${{ steps.toLowerCase.outputs.osLowercase }}-${{ steps.toLowerCase.outputs.archLowercase }}.tar.gz.sha256
           name: ${{ github.ref_name }}
+          body: |
+            LogCraft CLI Release

@@ -56,3 +56,5 @@ jobs:
             releases/plugins.tar.gz
             releases/plugins.tar.gz.sha256
           name: ${{ github.ref_name }}
+          body: |
+            LogCraft CLI Plugins
