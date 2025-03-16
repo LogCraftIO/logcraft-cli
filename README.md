@@ -12,3 +12,4 @@ LogCraft CLI `lgc` is an opensource utility that simplifies the adoption of Dete
 
 ---
 
+![LogCraft CLI](./docs/src/public/img/logcraft-cli.webp)
