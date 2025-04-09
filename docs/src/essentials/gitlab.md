@@ -20,9 +20,13 @@ This example demonstrates how to integrate lgc in GitLab with a classic 3-stages
 
 The first step to integrate lgc with GitLab is to define secrets, token and credentials as GitLab CI/CD variables. While this is optional, this is highly advised for security reasons (do not store/commit credentials in a repository).
 
-Go to your project's **Settings**, under **Variables** you should be able to create CI/CD variables. In this example, 2 CI/CD variables are created: `SPLUNK_TOKEN_DEV` and `SPLUNK_TOKEN_PROD`.
+Go to your project's **Settings**, under **CI/CD > Variables** you should be able to create CI/CD variables. In this example, 2 CI/CD variables are created: `SPLUNK_TOKEN_DEV` and `SPLUNK_TOKEN_PROD`.
 
 ![GitLab CI/CD Variables](/img/gitlab-cicd-variables.png)
+
+::: danger Flag 'protect variable'
+When creating a new variable, GitLab activates the flag **_'Protect variable'_** by default to _"export variable to pipelines running on protected branches and tags **only**"_. This setting needs to be turned off if lgc needs to work from unprotected branches.
+:::
 
 Now, adjust **lgc.toml** to reference these variables:
 
