@@ -92,10 +92,6 @@ export default defineConfig({
       { icon: "twitter", link: "https://twitter.com/LogCraftIO" },
       { icon: "github", link: "https://github.com/LogCraftIO/logcraft-cli" },
       { icon: "linkedin", link: "https://www.linkedin.com/company/logcraft" },
-      {
-        icon: "slack",
-        link: "https://join.slack.com/t/logcraft/shared_invite/zt-2jdw7ntts-yVhw8rIji5ZFpPt_d6HM9w",
-      },
     ],
     footer: {
       copyright: "Copyright © 2023-present LogCraft, SAS",
