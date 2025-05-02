@@ -8,8 +8,6 @@ LogCraft CLI `lgc` is an opensource utility that simplifies the adoption of Dete
 
 **Source Code**: <a href="https://github.com/LogCraftIO/logcraft-cli" target="_blank">https://github.com/LogCraftIO/logcraft-cli</a>
 
-**Community**: <a href="https://join.slack.com/t/logcraft/shared_invite/zt-2jdw7ntts-yVhw8rIji5ZFpPt_d6HM9w" target="_blank">Join us on Slack</a>
-
 ---
 
 ![LogCraft CLI](./docs/src/public/img/logcraft-cli.webp)
